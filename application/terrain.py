@@ -46,7 +46,11 @@ hauteur : int - hauteur du terrain
         """Place les mines dans self.terrain de façon aléatoire, selon le \
 nombre demandé."""
 
+        # Le nombre de mine déjà placées
         mines = 0
+
+        # Si l'on demande trop de mines, on indique que c'est impossible
+        if nombre_mines > self.largeur * self.hauteur: raise ValueError
 
         # Tant que l'on a pas placé toutes les mines demandées
         while mines < nombre_mines:

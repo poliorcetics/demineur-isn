@@ -6,5 +6,8 @@
 
 ## 10/02/2016:
 
-    MàJ de **terrain.py**:
+    1 - MàJ de **terrain.py**:
         Fonction *place_nombre_mines()* créée, elle permet de modifier *self.terrain* afin de le retourner en ayant placé dans chaque case le nombre de mines adjacentes.
+
+    2 - MàJ de **terrain.py**:
+        Correction d’une cause possible de boucle infinie dans la fonction `Terrain.place_mine()` lorsque trop de mines étaient demandées par rapport à la taille du terrain.
