@@ -6,11 +6,11 @@
 
 ## 10/02/2016:
 
-    1 - MàJ de **terrain.py**:
-        Fonction *place_nombre_mines()* créée, elle permet de modifier *self.terrain* afin de le retourner en ayant placé dans chaque case le nombre de mines adjacentes.
+1. MàJ de **terrain.py**:
+    Fonction *place_nombre_mines()* créée, elle permet de modifier *self.terrain* afin de le retourner en ayant placé dans chaque case le nombre de mines adjacentes.
 
-        **Problèmes rencontrés:**
-        Au départ, l'utilisation de cd type de code:
+    **Problèmes rencontrés:**
+    Au départ, l'utilisation de cd type de code:
 ```
 try:
     if self.terrain[y-1][x-1]:
@@ -18,9 +18,9 @@ try:
 except IndexError:
     pass
 ```
-        entrainait des erreurs d'index mal placés : lorsque y-1 et/ou x-1 devenaient égaux à -1, on pouvait tomber sur une mine hors champ ou compter une deuxième fois une mine qui aurait été comptée par un autre test.
-
-        J'ai ensuite testé:
+    entrainait des erreurs d'index mal placés : lorsque y-1 et/ou x-1 devenaient égaux à -1, on pouvait tomber sur une mine hors champ ou compter une deuxième fois une mine qui aurait été comptée par un autre test.
+        
+    J'ai ensuite testé:
 ```
 try:
     if self.terrain[abs(y-1)][abs(x-1)]:
@@ -28,9 +28,9 @@ try:
 except IndexError:
     pass
 ```
-        Mais dans ce cas là, on comptait environ deux fois chaque mine présente autour des cases placées sur les lignes/colonnes extérieures.
-
-        J'ai donc ensuite utilisé cela comme solution qui rendrait le code à la fois compact, lisible et fonctionnel:
+    Mais dans ce cas là, on comptait environ deux fois chaque mine présente autour des cases placées sur les lignes/colonnes extérieures.
+        
+    J'ai donc ensuite utilisé cela comme solution qui rendrait le code à la fois compact, lisible et fonctionnel:
 ```
 # Si y-1 ou x-1 = -1, on risque d'accéder au mauvais élément de
 # self.terrain lors de la vérification de l'entourage de la case
@@ -77,19 +77,19 @@ if self.terrain[y][x] < 9:
     self.terrain[y][x] = entourage.count(9)
 ```
 
-    2 - MàJ de **terrain.py**:
-        Correction d’une cause possible de boucle infinie dans la fonction `Terrain.place_mine()` lorsque trop de mines étaient demandées par rapport à la taille du terrain.
+2. MàJ de **terrain.py**:
+    Correction d’une cause possible de boucle infinie dans la fonction `Terrain.place_mine()` lorsque trop de mines étaient demandées par rapport à la taille du terrain.
 
-        **L'erreur:**
+    **L'erreur:**
 ```
 # Tant que l'on a pas placé toutes les mines demandées
 while mines < nombre_mines:
 ```
-        Ce code pose un risque potentiel d'erreur car il était possible jusque là de demander un nombre de mines supérieur à la taille du terrain et donc de créer une boucle infinie lors de la génération du terrain.
-
-        **La correction:**
+    Ce code pose un risque potentiel d'erreur car il était possible jusque là de demander un nombre de mines supérieur à la taille du terrain et donc de créer une boucle infinie lors de la génération du terrain.
+        
+    **La correction:**
 ```
 # Si l'on demande trop de mines, on indique que c'est impossible
 if nombre_mines > self.largeur * self.hauteur: raise ValueError
 ```
-        Si le nombre de mines demandées est trop grand pour le terrain, on lève une erreur pour l'indiquer.
+    Si le nombre de mines demandées est trop grand pour le terrain, on lève une erreur pour l'indiquer.
