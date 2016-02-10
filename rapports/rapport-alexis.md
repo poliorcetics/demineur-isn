@@ -6,11 +6,13 @@ Création de **terrain.py** et mise en place du fichier **rapport-alexis.md** ai
 
 ## 10/02/2016:
 
-1) MàJ de **terrain.py**:
+#### 1) MàJ de **terrain.py**:
+
 Fonction *place_nombre_mines()* créée, elle permet de modifier *self.terrain* afin de le retourner en ayant placé dans chaque case le nombre de mines adjacentes.
 
 **Problèmes rencontrés:**
-Au départ, l'utilisation de cd type de code:
+
+Au départ, l'utilisation de ce type de code:
 ```python
 try:
     if self.terrain[y-1][x-1]:
@@ -77,7 +79,8 @@ if self.terrain[y][x] < 9:
     self.terrain[y][x] = entourage.count(9)
 ```
 
-2) MàJ de **terrain.py**:
+#### 2) MàJ de **terrain.py**:
+
 Correction d’une cause possible de boucle infinie dans la fonction `Terrain.place_mine()` lorsque trop de mines étaient demandées par rapport à la taille du terrain.
 
 **L'erreur:**
