@@ -44,7 +44,10 @@ hauteur : int - hauteur du terrain
 
     def place_mines(self, nombre_mines):
         """Place les mines dans self.terrain de façon aléatoire, selon le \
-nombre demandé."""
+nombre demandé.
+
+Soulève une ValueError si le nombre de mines demandé est plus grand que la \
+taille du terrain."""
 
         # Le nombre de mine déjà placées
         mines = 0
@@ -72,7 +75,7 @@ nombre demandé."""
         return self.terrain
 
     def place_nombre_mines(self):
-        """"Met à jour self.terrain de façon à ce que chaque case n'étant pas
+        """"Met à jour self.terrain de façon à ce que chaque case n'étant pas \
 une mine prenne en compte le nombre de mine autour d'elle."""
 
         # On parcourt self.terrain
@@ -125,8 +128,7 @@ une mine prenne en compte le nombre de mine autour d'elle."""
 
         return self.terrain
 
-# Exemples en console,
-# toutes les valeurs ici sont des valeurs de test uniquement
+# Exemples en console, toutes les valeurs ici sont des valeurs de test.
 if __name__ == "__main__":
     
     t = Terrain(12, 12)
