@@ -1,14 +1,14 @@
 # Fichier de rapport du travail d'**Alexis**
 
 ## 09/02/2016:
-    
-Création de **terrain.py** et mise en place du fichier **rapport-alexis.md** ainsi que du **README.md**.
+
+Création de `terrain.py` et mise en place du fichier `rapport-alexis.md` ainsi que du `README.md`.
 
 ## 10/02/2016:
 
-#### 1) MàJ de **terrain.py**:
+#### 1) MàJ de terrain.py:
 
-Fonction *place_nombre_mines()* créée, elle permet de modifier *self.terrain* afin de le retourner en ayant placé dans chaque case le nombre de mines adjacentes.
+Fonction `place_nombre_mines()` créée, elle permet de modifier `self.terrain` afin de le retourner en ayant placé dans chaque case le nombre de mines adjacentes.
 
 **Problèmes rencontrés:**
 
@@ -21,7 +21,7 @@ except IndexError:
     pass
 ```
 entrainait des erreurs d'index mal placés : lorsque y-1 et/ou x-1 devenaient égaux à -1, on pouvait tomber sur une mine hors champ ou compter une deuxième fois une mine qui aurait été comptée par un autre test.
-        
+
 J'ai ensuite testé:
 ```python
 try:
@@ -31,7 +31,7 @@ except IndexError:
     pass
 ```
 Mais dans ce cas là, on comptait environ deux fois chaque mine présente autour des cases placées sur les lignes/colonnes extérieures.
-        
+
 J'ai donc ensuite utilisé cela comme solution qui rendrait le code à la fois compact, lisible et fonctionnel:
 ```python
 # Si y-1 ou x-1 = -1, on risque d'accéder au mauvais élément de
@@ -79,7 +79,7 @@ if self.terrain[y][x] < 9:
     self.terrain[y][x] = entourage.count(9)
 ```
 
-#### 2) MàJ de **terrain.py**:
+#### 2) MàJ de terrain.py:
 
 Correction d’une cause possible de boucle infinie dans la fonction `Terrain.place_mine()` lorsque trop de mines étaient demandées par rapport à la taille du terrain.
 
@@ -89,7 +89,7 @@ Correction d’une cause possible de boucle infinie dans la fonction `Terrain.pl
 while mines < nombre_mines:
 ```
 Ce code pose un risque potentiel d'erreur car il était possible jusque là de demander un nombre de mines supérieur à la taille du terrain et donc de créer une boucle infinie lors de la génération du terrain.
-        
+
 **La correction:**
 ```python
 # Si l'on demande trop de mines, on indique que c'est impossible
