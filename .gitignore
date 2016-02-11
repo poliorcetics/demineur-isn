@@ -40,3 +40,4 @@ Thumbs.db
 # App generated files #
 #######################
 .idea
+__pycache__
