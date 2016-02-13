@@ -2,25 +2,22 @@
 
 from terrain import * # On fait appel au fichier terrain
 
-# On créer une fonction qui nous permet de régénéré le terrain
-# On réutilise les variables largeur, hauteur et nombre_mines 
-
 def rejouer(largeur, hauteur, nombre_mines):
+    """Regénère le terrain pour préparer une nouvelle partie. \
+Retourne un objet Terrain."""
 
-    # On réutilise les valeurs déjà connu de largeur et hauteur
-    terrain = Terrain(largeur, hauteur)
+    terrain = Terrain(largeur, hauteur) # Génération du terrain de base
     
-    # On réutilise les valeurs déjà connu de nombre_mines
-    terrain.place_mines(nombre_mines)
+    terrain.place_mines(nombre_mines) # minage
 
-    # On réutilise la variable place_nombre_mines qui va changer la place des mines
-    terrain.place_nombre_mines()
+    terrain.place_nombre_mines() # entourage calculé
 
-    return terrain.affiche_terrain() 
+    return terrain # retourne un objet Terrain
+
+
 
 # Exemples en console, toutes les valeurs ici sont des valeurs de test.
-
 if __name__ == "__main__":
 
-    rejouer(8,8,10)
+    print(rejouer(8,8,10).terrain_complet)
 

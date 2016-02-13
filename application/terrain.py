@@ -26,20 +26,28 @@ class Terrain:
 largeur : int - largeur du terrain
 hauteur : int - hauteur du terrain
 
-- __init__(largeur, hauteur) -> None
-- affiche_terrain() -> None
-- place_mines(nombre_mines=10) -> self.terrain, liste
-- entourage(x, y) -> entourage, liste
-- place_nombre_mines() -> self.terrain, liste
-- place_drapeau(x, y) -> self.terrain, liste
-- supprime_drapeau(x, y) -> self.terrain, liste 
+pos_mines : list - coordonnées (x, y) représentant les positions des \
+différentes mines
+terrain_mine : list - le terrain constitué des mines et des cases inconnues
+terrain_complet : list - le terrain constitué des mines et de leur entourage
+
+- __init__(largeur, hauteur)        -> None
+- affiche_terrain()                 -> None
+- place_mines(nombre_mines=10)      -> self.terrain, liste
+- entourage(x, y)                   -> entourage, liste
+- place_nombre_mines()              -> self.terrain, liste
+- place_drapeau(x, y)               -> self.terrain, liste
+- supprime_drapeau(x, y)            -> self.terrain, liste 
 """
 
     def __init__(self, largeur, hauteur):
 
         self.largeur = largeur
         self.hauteur = hauteur
+
         self.pos_mines = []
+        self.terrain_mine = []
+        self.terrain_complet = []
 
         # Initialise le terrain avec des tableaux remplis de 0
         self.terrain = [[INCONNU] * self.largeur for _ in range(self.hauteur)]
@@ -62,7 +70,8 @@ Lève une ValueError si le nombre de mines demandé est plus grand que la \
 taille du terrain."""
 
         # Si l'on demande trop de mines, on indique que c'est impossible
-        if nombre_mines > self.largeur * self.hauteur: raise ValueError
+        if nombre_mines > self.largeur * self.hauteur: raise \
+ValueError("Trop de mines demandees")
 
         # Tant que l'on a pas placé toutes les mines demandées
         while len(self.pos_mines) < nombre_mines:
@@ -85,7 +94,12 @@ taille du terrain."""
         # On utilise shuffle pour mélanger les mines sur l'ensemble du terrain
         # car en cas de petit nombre de mines sur un grand terrain, elles auront
         # tendances à se placer dans les premières lignes
-        return shuffle(self.terrain)
+        shuffle(self.terrain)
+
+        # On effectue une sauvegarde des
+        self.terrain_mine = self.terrain
+
+        return self.terrain
 
     def entourage(self, x, y):
         """Retourne l'entourage d'une case donnée sous forme d'une liste. \
@@ -152,6 +166,8 @@ une mine ni un drapeau prenne en compte le nombre de mine autour d'elle."""
 
                     self.terrain[y][x] = self.entourage(x, y).count(MINE)
 
+        self.terrain_complet = self.terrain
+
         return self.terrain
 
     def place_drapeau(self, x, y):
@@ -181,12 +197,12 @@ Lève une ValueError si la case n'est pas un drapeau."""
 # Exemples en console, toutes les valeurs ici sont des valeurs de test.
 if __name__ == "__main__":
     
-    t = Terrain(10, 10)
+    t = Terrain(20, 20)
     t.affiche_terrain()
 
     print("----------------")
     
-    t.place_mines(10)
+    t.place_mines(100)
     t.affiche_terrain()
 
     print("----------------")

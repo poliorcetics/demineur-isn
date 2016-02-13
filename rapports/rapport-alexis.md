@@ -1,8 +1,12 @@
 # Fichier de rapport du travail d'**Alexis**
 
+_______________________________________________________________________________
+
 ## 09/02/2016:
 
 Création de `terrain.py` et mise en place du fichier `rapport-alexis.md` ainsi que du `README.md`.
+
+_______________________________________________________________________________
 
 ## 10/02/2016:
 
@@ -96,3 +100,21 @@ Ce code pose un risque potentiel d'erreur car il était possible jusque là de d
 if nombre_mines > self.largeur * self.hauteur: raise ValueError
 ```
 Si le nombre de mines demandées est trop grand pour le terrain, on lève une erreur pour l'indiquer.
+
+_______________________________________________________________________________
+
+## 14/02/2016:
+
+#### 1) Création de constantes.py
+
+Création du fichier `constantes.py` qui contient les constantes représentant les différents états possibles d'une case.
+
+#### 2) MàJ de terrain.py:
+
++ Ajout d’une fonction pour placer un drapeau
++ Ajout d’une fonction pour supprimer un drapeau
++ Ajout d’une fonction qui retourne l’entourage d’une case donnée
++ Prise en compte des constantes définies dans `constantes.py`
++ Ajout d'une variable qui sauvegarde le terrain miné avec ses cases inconnues
++ Ajout d'une variable qui sauvegarde le terrain complet (miné avec entourage calculé) 
+= Affichage du terrain remanié
