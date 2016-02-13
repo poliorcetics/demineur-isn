@@ -139,8 +139,6 @@ if __name__ == "__main__":
     
     t.place_mines(12*12//3)
     t.affiche_terrain()
-    
     print("----------------")
-    
     t.place_nombre_mines()
     t.affiche_terrain()
