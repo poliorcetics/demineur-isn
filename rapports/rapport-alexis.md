@@ -118,3 +118,7 @@ Création du fichier `constantes.py` qui contient les constantes représentant l
 + Ajout d'une variable qui sauvegarde le terrain miné avec ses cases inconnues
 + Ajout d'une variable qui sauvegarde le terrain complet (miné avec entourage calculé) 
 = Affichage du terrain remanié
+
+#### 3) MàJ de actions_user.py:
+
+= Mise à jour de la documentation/ des commentaires.
