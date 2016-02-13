@@ -128,14 +128,19 @@ une mine prenne en compte le nombre de mine autour d'elle."""
 
         return self.terrain
 
+
 # Exemples en console, toutes les valeurs ici sont des valeurs de test.
 if __name__ == "__main__":
     
     t = Terrain(12, 12)
     t.affiche_terrain()
+
     print("----------------")
+    
     t.place_mines(12*12//3)
     t.affiche_terrain()
+    
     print("----------------")
+    
     t.place_nombre_mines()
     t.affiche_terrain()
