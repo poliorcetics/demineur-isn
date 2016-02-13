@@ -74,7 +74,7 @@ taille du terrain."""
                     # On place une mine si il n'y en a pas déjà une et qu'il
                     # reste un emplacement de libre avec une probabilité de 1/10
                     if randint(0, 9) == 9 and self.terrain[y][x] != MINE \
-                            and mines < nombre_mines:
+                            and len(self.pos_mines) < nombre_mines:
                         
                         # On place la mine au point (x, y) 
                         self.terrain[y][x] = MINE
