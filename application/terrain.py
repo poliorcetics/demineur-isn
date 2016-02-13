@@ -148,7 +148,7 @@ une mine ni un drapeau prenne en compte le nombre de mine autour d'elle."""
                 # Pour cela, on vérifie les 8 cases l'entourant et on ajoute
                 # leur contenu à 'entourage' si elles sont accessibles
                 # (pas d'IndexError), sinon CASE: pas une mine
-                if -1 < self.terrain[y][x] < 9:
+                if self.terrain[y][x] < 9:
 
                     self.terrain[y][x] = self.entourage(x, y).count(MINE)
 
