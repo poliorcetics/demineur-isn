@@ -23,5 +23,5 @@ DRAPEAU = -1
 # La valeur peut varier entre 0 et 8 inclus.
 CASE = 0
 
-# Représente une case inconnue
+# Représente une case inconnue de l'utilisateur
 INCONNU = -2
