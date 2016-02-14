@@ -20,8 +20,8 @@ classes:
 """
 
 
-class Terrain:
-    """ >> class Terrain
+clas Terrain:
+    """ >> class Terrain(Object)
 
 largeur : int - largeur du terrain
 hauteur : int - hauteur du terrain
@@ -49,7 +49,7 @@ terrain_complet : list - le terrain constitué des mines et de leur entourage
         self.terrain_mine = []
         self.terrain_complet = []
 
-        # Initialise le terrain avec des tableaux remplis de 0
+        # Initialise le terrain avec des tableaux remplis de case INCONNU
         self.terrain = [[INCONNU] * self.largeur for _ in range(self.hauteur)]
 
     def affiche_terrain(self):
