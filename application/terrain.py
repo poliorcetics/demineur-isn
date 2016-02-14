@@ -45,11 +45,9 @@ terrain_complet : list - le terrain constitué des mines et de leur entourage
         self.largeur = largeur
         self.hauteur = hauteur
 
-        self.pos_mines = [] # Retient la position de chaque mine dans un tuple
-                            # de la forme (x, y)
-        self.terrain_mine = [] # Retient le terrain sous sa forme miné
-        self.terrain_complet = [] # Retient le terrain sous sa forme miné +
-                                  # entourage calculé
+        self.pos_mines = []
+        self.terrain_mine = []
+        self.terrain_complet = []
 
         # Initialise le terrain avec des tableaux remplis de 0
         self.terrain = [[INCONNU] * self.largeur for _ in range(self.hauteur)]
@@ -57,7 +55,6 @@ terrain_complet : list - le terrain constitué des mines et de leur entourage
     def affiche_terrain(self):
         """Affiche le terrain formaté en console et le retourne."""
 
-        # Affiche le terrain correctement
         for y in self.terrain:
             for x in y:
                 print(x, end=' ')
@@ -99,7 +96,7 @@ ValueError("Trop de mines demandees")
         # tendances à se placer dans les premières lignes
         shuffle(self.terrain)
 
-        # On effectue une sauvegarde du terrain miné
+        # On effectue une sauvegarde des
         self.terrain_mine = self.terrain
 
         return self.terrain
@@ -169,7 +166,6 @@ une mine ni un drapeau prenne en compte le nombre de mine autour d'elle."""
 
                     self.terrain[y][x] = self.entourage(x, y).count(MINE)
 
-        # Sauvegarde du terrain complet (miné + entourage)
         self.terrain_complet = self.terrain
 
         return self.terrain
@@ -201,12 +197,12 @@ Lève une ValueError si la case n'est pas un drapeau."""
 # Exemples en console, toutes les valeurs ici sont des valeurs de test.
 if __name__ == "__main__":
     
-    t = Terrain(20, 20)
+    t = Terrain(10, 10)
     t.affiche_terrain()
 
     print("----------------")
     
-    t.place_mines(100)
+    t.place_mines(25)
     t.affiche_terrain()
 
     print("----------------")
