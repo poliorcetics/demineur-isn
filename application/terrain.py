@@ -8,7 +8,7 @@ from constantes import * # Les constantes représentants les éléments du jeu
 
 Permet d'initaliser le terrain de jeu du démineur.
 
-classes:
+classe:
     - Terrain:
         - __init__(largeur, hauteur)
         - affiche_terrain()
@@ -20,7 +20,7 @@ classes:
 """
 
 
-clas Terrain:
+class Terrain:
     """ >> class Terrain(Object)
 
 largeur : int - largeur du terrain
@@ -49,7 +49,7 @@ terrain_complet : list - le terrain constitué des mines et de leur entourage
         self.terrain_mine = []
         self.terrain_complet = []
 
-        # Initialise le terrain avec des tableaux remplis de case INCONNU
+        # Initialise le terrain avec des tableaux remplis de cases INCONNU
         self.terrain = [[INCONNU] * self.largeur for _ in range(self.hauteur)]
 
     def affiche_terrain(self):
