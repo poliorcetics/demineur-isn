@@ -6,9 +6,9 @@ from constantes import * # Les constantes représentants les éléments du jeu
 
 """ -- terrain.py
 
-Permet d'initaliser le terrain de jeu du démineur.
+Permet d'initaliser et de contrôler le terrain de jeu du démineur.
 
-classes:
+classe:
     - Terrain:
         - __init__(largeur, hauteur)
         - affiche_terrain()
@@ -21,26 +21,33 @@ classes:
 
 
 class Terrain:
-    """ >> class Terrain
+    """ >> classe Terrain(Object)
 
-largeur : int - largeur du terrain
-hauteur : int - hauteur du terrain
+INITIALISATION
+ - largeur : int - largeur du terrain en case
+ - hauteur : int - hauteur du terrain en case
 
-pos_mines : list - coordonnées (x, y) représentant les positions des \
+VARIABLES
+ - pos_mines : list - coordonnées (x, y) représentant les positions des \
 différentes mines
-terrain_mine : list - le terrain constitué des mines et des cases inconnues
-terrain_complet : list - le terrain constitué des mines et de leur entourage
+ - terrain_mine : list - le terrain constitué des mines et des cases inconnues
+ - terrain_complet : list - le terrain constitué des mines et de leur entourage
 
-- __init__(largeur, hauteur)        -> None
-- affiche_terrain()                 -> None
-- place_mines(nombre_mines=10)      -> self.terrain, liste
-- entourage(x, y)                   -> entourage, liste
-- place_nombre_mines()              -> self.terrain, liste
-- place_drapeau(x, y)               -> self.terrain, liste
-- supprime_drapeau(x, y)            -> self.terrain, liste 
+MÉTHODES
+ - __init__(largeur, hauteur)        -> None
+ - affiche_terrain()                 -> None
+ - place_mines(nombre_mines=10)      -> self.terrain, liste
+ - entourage(x, y)                   -> entourage, liste
+ - place_nombre_mines()              -> self.terrain, liste
+ - place_drapeau(x, y)               -> self.terrain, liste
+ - supprime_drapeau(x, y)            -> self.terrain, liste 
 """
 
     def __init__(self, largeur, hauteur):
+        """Initialisation:
+ - largeur : int - largeur du terrain en case
+ - hauteur : int - hauteur du terrain en case
+"""
 
         self.largeur = largeur
         self.hauteur = hauteur
@@ -49,7 +56,7 @@ terrain_complet : list - le terrain constitué des mines et de leur entourage
         self.terrain_mine = []
         self.terrain_complet = []
 
-        # Initialise le terrain avec des tableaux remplis de 0
+        # Initialise le terrain avec des tableaux remplis de cases INCONNU
         self.terrain = [[INCONNU] * self.largeur for _ in range(self.hauteur)]
 
     def affiche_terrain(self):
@@ -197,12 +204,12 @@ Lève une ValueError si la case n'est pas un drapeau."""
 # Exemples en console, toutes les valeurs ici sont des valeurs de test.
 if __name__ == "__main__":
     
-    t = Terrain(20, 20)
+    t = Terrain(10, 10)
     t.affiche_terrain()
 
     print("----------------")
     
-    t.place_mines(100)
+    t.place_mines(25)
     t.affiche_terrain()
 
     print("----------------")
