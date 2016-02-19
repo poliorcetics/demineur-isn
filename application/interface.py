@@ -54,7 +54,7 @@ différentes cases du jeu
 
 MÉTHODES
  - __init__(nom_app, largeur_min, hauteur_min, largeur, hauteur)    -> None
- 
+
  - maj_images()                             -> None
  - maj_max_mines()                          -> None
  - maj_case()                               -> None
@@ -66,7 +66,7 @@ MÉTHODES
  - mines_scale(frame)                       -> None
  - rejouer_button(frame)                    -> None
  - reglages_frame()                         -> frame, tk.Frame
- 
+
  - determine_taille_case()                  -> int
 """
 
@@ -324,9 +324,9 @@ jeu."""
         """Adapte la taille des images aux nombres de cases du plateau.
 
 Retourne un int: 15, 30, 45 ou 60 (taille des images utilisées, en pixel)."""
-        
+
         if 10 <= max(self.hauteur, self.largeur) < 15: return 45
-        
+
         if 15 <= max(self.hauteur, self.largeur) < 20: return 30
 
         if 20 <= max(self.hauteur, self.largeur): return 15
