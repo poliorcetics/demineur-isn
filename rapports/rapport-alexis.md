@@ -105,7 +105,7 @@ _______________________________________________________________________________
 
 ## 14/02/2016:
 
-#### 1) Création de constantes.py
+#### 1) Création de constantes.py:
 
 Création du fichier `constantes.py` qui contient les constantes représentant les différents états possibles d'une case.
 
@@ -122,3 +122,36 @@ Création du fichier `constantes.py` qui contient les constantes représentant l
 #### 3) MàJ de actions_user.py:
 
 + Mise à jour de la documentation/ des commentaires.
+
+_______________________________________________________________________________
+
+## 18-19/02/2016
+
+#### 1) MàJ de constantes.py, ajout des ressources, premiière version de l'interface
+
+Ajout des constantes suivantes dans `constantes.py`:
++ `NOM_APP`: le nom de l'application (son titre),
++ `LARGEUR_MIN`: la largeur minimale de la fenêtre de l'application, en pixel,
++ `HAUTEUR_MIN`: la hauteur minimale de la fenêtre de l'application, en pixel,
++ `MIN_CASES`: le nombre minimal de cases sur le plateau, longueur comme largeur,
++ `MAX_CASES`: le nombre maximal de cases sur le plateau, longueur comme largeur.
+
+Ajout des ressources (images uniquement pour le moment) qui seront affichées sur le plateau:
++ Création de 5 dossiers, seuls les dossiers `15`, `30`,`45` et `60` sont utilisés lors du déroulement du jeu, le dossier `original` sert à refaire les images en cas de besoin,
++ Ajout des images suivantes: `base.gif`, `drapeau.gif`, `mine.gif` et `mine_explose.gif`.
+
+Ajout du fichier `interface.py`:
++ Ajout de la classe `Interface` qui contient les fonctions gérant l'interface. Pour le moment elle permet de:
+    + Générer un plateau uniforme de taille 5x5 jusqu'à 30x30,
+    + Choisir la taille de ce plateau entre ces deux bornes,
+    + Régler le nombre de mines via une échelle (même s'il n'a aucune influence pour le moment) qui est mise à jour à chaque changement de la taille du plateau,
+    + Regénérer un nouveau plateau grâce à un bouton.
+
+La documentation intégrale a été réalisée.
+
+#### 2) MàJ des ressources:
+
++ Ajout des images des cases `case_1.gif` à `case_8.gif`,
++ Coloration des images des cases `case_1.gif` à `case_8.gif` pour mieux représenter le danger autour d'elles.
+
+Toutes les tailles ont été mise à jour.
