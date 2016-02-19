@@ -31,7 +31,7 @@ MINE_EXPLOSE = 10
 # Représente un drapeau (ajoutable/supprimable par le joueur)
 DRAPEAU = -1
 
-# Représente une case de base vide visible.
+# Représente une case de base vide visible
 CASE = 0
 
 # Représente une case inconnue de l'utilisateur

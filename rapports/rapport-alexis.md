@@ -111,13 +111,13 @@ Création du fichier `constantes.py` qui contient les constantes représentant l
 
 #### 2) MàJ de terrain.py:
 
-+ Ajout d’une fonction pour placer un drapeau
-+ Ajout d’une fonction pour supprimer un drapeau
-+ Ajout d’une fonction qui retourne l’entourage d’une case donnée
-+ Prise en compte des constantes définies dans `constantes.py`
-+ Ajout d'une variable qui sauvegarde le terrain miné avec ses cases inconnues
-+ Ajout d'une variable qui sauvegarde le terrain complet (miné avec entourage calculé) 
-+ Affichage du terrain remanié
++ Ajout d’une fonction pour placer un drapeau,
++ Ajout d’une fonction pour supprimer un drapeau,
++ Ajout d’une fonction qui retourne l’entourage d’une case donnée,
++ Prise en compte des constantes définies dans `constantes.py`,
++ Ajout d'une variable qui sauvegarde le terrain miné avec ses cases inconnues,
++ Ajout d'une variable qui sauvegarde le terrain complet (miné avec entourage calculé),
++ Affichage du terrain remanié.
 
 #### 3) MàJ de actions_user.py:
 
