@@ -5,6 +5,7 @@ TODO: binder le Terrain.terrain et le Interface.plateau -> dessine_plateau()
 """
 
 import tkinter as tk
+from os import sep # pour gérer l'accès aux ressources sur Windows/Unix
 
 from constantes import *
 from terrain import *
@@ -121,7 +122,7 @@ Appelée à chaque fois qu'un nouveau plateau est généré.
         """
 
         self.taille_case = self.determine_taille_case()
-        self.chemin_images = 'ressources/%s/' % self.taille_case
+        self.chemin_images = 'ressources%s%s%s' % (sep, self.taille_case, sep)
 
         self.base = tk.PhotoImage(file='%sbase.gif' % self.chemin_images)
         self.drapeau = tk.PhotoImage(file='%sdrapeau.gif' % self.chemin_images)
