@@ -1,4 +1,4 @@
-# Fichier de rapport du travail d'**Alexis**
+# Fichier de rapport du travail d'Alexis
 
 _______________________________________________________________________________
 
@@ -125,7 +125,7 @@ Création du fichier `constantes.py` qui contient les constantes représentant l
 
 _______________________________________________________________________________
 
-## 18-19/02/2016
+## 18-19-20/02/2016
 
 #### 1) MàJ de constantes.py, ajout des ressources, premiière version de l'interface
 
@@ -228,3 +228,8 @@ supprimer un."""
         self.terrain.terrain[y][x] = DRAPEAU
         return
 ```
+
+#### 4) Corrections
+
++ Du fait de l'ajout de l'interface, il n'est plus possible de demander le placement de plus de mines que possibles, on peut donc retirer le test correspondant dans le fichier `terrain.py`
++ Passage de l'ensemble des fichiers `*.py` en mode `PEP-8 compliant`. (Oui c'est pour le fun)

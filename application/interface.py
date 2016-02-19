@@ -43,10 +43,10 @@ VARIABLES
  - interface : Tk - la racine de la fenêtre du programme
  - nouvelle_largeur : IntVar - la valeur de l'échelle de la largeur
  - nouvelle_hauteur : IntVar - la valeur de l'échelle de la hauteur
- - cases : dict - dictionnaire des cases du plateau. Forme: {Tk.Label: (x, y),}
- - taille_case : int - la taille de case à utiliser (15, 30, 45 ou 60) en pixel
- - chemin_images : str - le chemin vers le dossier contenant les images de la \
-taille choisie
+ - cases : dict - dictionnaire des cases du plateau. Forme: {Tk.Label: (x, y)}
+ - taille_case : int - la taille de case à utiliser (15, 30, 45, 60) en pixel
+ - chemin_images : str - le chemin vers le dossier contenant les images de \
+la taille choisie
  - base, drapeau, mine, mine_explose : tk.PhotoImage - les images des \
 différentes cases du jeu
  - cases_img : list - listes les cases chiffrées (0 à 8), tk.PhotoImage
@@ -107,7 +107,7 @@ MÉTHODES
         # Une fois que tout est configuré, on lance l'interface
         self.interface.mainloop()
 
-    # ÉVÈNEMENTS ###############################################################
+    # ÉVÈNEMENTS ##############################################################
 
     def maj_images(self):
         """Met à jour les images utilisées pour dessiner le plateau.
@@ -120,20 +120,19 @@ Appelée à chaque fois qu'un nouveau plateau est généré.
         self.base = tk.PhotoImage(file='%sbase.gif' % self.chemin_images)
         self.drapeau = tk.PhotoImage(file='%sdrapeau.gif' % self.chemin_images)
         self.mine = tk.PhotoImage(file='%smine.gif' % self.chemin_images)
-        self.mine_explose = tk.PhotoImage(file='%smine_explose.gif' \
+        self.mine_explose = tk.PhotoImage(file='%smine_explose.gif'
                                           % self.chemin_images)
 
         self.cases_img = [
-                        tk.PhotoImage(file='%scase_0.gif' % self.chemin_images),
-                        tk.PhotoImage(file='%scase_1.gif' % self.chemin_images),
-                        tk.PhotoImage(file='%scase_2.gif' % self.chemin_images),
-                        tk.PhotoImage(file='%scase_3.gif' % self.chemin_images),
-                        tk.PhotoImage(file='%scase_4.gif' % self.chemin_images),
-                        tk.PhotoImage(file='%scase_5.gif' % self.chemin_images),
-                        tk.PhotoImage(file='%scase_6.gif' % self.chemin_images),
-                        tk.PhotoImage(file='%scase_7.gif' % self.chemin_images),
-                        tk.PhotoImage(file='%scase_8.gif' % self.chemin_images)
-                          ]
+            tk.PhotoImage(file='%scase_0.gif' % self.chemin_images),
+            tk.PhotoImage(file='%scase_1.gif' % self.chemin_images),
+            tk.PhotoImage(file='%scase_2.gif' % self.chemin_images),
+            tk.PhotoImage(file='%scase_3.gif' % self.chemin_images),
+            tk.PhotoImage(file='%scase_4.gif' % self.chemin_images),
+            tk.PhotoImage(file='%scase_5.gif' % self.chemin_images),
+            tk.PhotoImage(file='%scase_6.gif' % self.chemin_images),
+            tk.PhotoImage(file='%scase_7.gif' % self.chemin_images),
+            tk.PhotoImage(file='%scase_8.gif' % self.chemin_images)]
 
     def maj_max_mines(self, e):
         """Met à jour le nombre maximum de mines sélectionnables à chaque \
@@ -163,8 +162,8 @@ n'est pas un drapeau."""
             return
         # Si ce n'est pas un drapeau, alors on ajoute la case à la liste des
         # cases du terrain vues
-        # Si c'est une mine on affiche une mine (le fait d'avoir perdu n'est pas
-        # encore pris en compte)
+        # Si c'est une mine on affiche une mine (le fait d'avoir perdu n'est
+        # pas encore pris en compte)
         elif valeur_case == MINE:
             case['image'] = self.mine
             self.terrain.pos_vues.append((x, y))
@@ -189,8 +188,8 @@ supprimer un."""
 
         valeur_case = self.terrain.terrain[y][x]
 
-        # S'il y a déjà un drapeau, on le supprime et on remplace par l'ancienne
-        # valeur
+        # S'il y a déjà un drapeau, on le supprime et on remplace par
+        # l'ancienne valeur
         if valeur_case == DRAPEAU:
             case['image'] = self.base
             self.terrain.terrain[y][x] = self.terrain.terrain_complet[y][x]
@@ -203,10 +202,11 @@ supprimer un."""
             self.terrain.terrain[y][x] = DRAPEAU
             return
 
-    # ÉLÉMENTS DE L'INTERFACE ##################################################
+    # ÉLÉMENTS DE L'INTERFACE #################################################
 
     def dessine_plateau(self):
-        """Dessine le plateau du jeu et y place les cases avec l'image de base."""
+        """Dessine le plateau du jeu et y place les cases avec l'image de base.
+        """
 
         # On supprime self.plateau s'il existe déjà afin de le 'nettoyer'
         try: self.plateau.destroy()
@@ -236,16 +236,20 @@ supprimer un."""
                 del case
 
         # Génère un terrain adapté à la grille choisie
-        self.terrain = action.nouveau_terrain(self.largeur,
-                                              self.hauteur,
-                                              self.nombre_mines.get())
+        self.terrain = action.nouveau_terrain(
+            self.largeur,
+            self.hauteur,
+            self.nombre_mines.get())
 
         return plateau
 
     def dessine_case(self, racine, x, y):
         """Dessine une case simple."""
 
-        case = tk.Label(racine, borderwidth=1, relief='sunken',image=self.base)
+        case = tk.Label(racine,
+            borderwidth=1,
+            relief='sunken',
+            image=self.base)
 
         # Lie les cases aux actions possible
         case.bind('<Button-1>', self.maj_case)
@@ -267,9 +271,10 @@ supprimer un."""
         self.nombre_mines.grid(column=0, row=2, pady=5)
 
     def taille_scale(self, racine):
-        """Place les échelles pour choisir la largeur et la hauteur du plateau \
-en nombre de cases. Elles sont automatiquement liées à self.maj_max_mines() \
-pour mettre à jour l'échelle du choix du nombre de mines à chaque changement."""
+        """Place les échelles pour choisir la largeur et la hauteur du \
+plateau en nombre de cases. Elles sont automatiquement liées à \
+self.maj_max_mines() pour mettre à jour l'échelle du choix du nombre de mines \
+à chaque changement."""
 
         # Pour choisir le nombre de case en largeur
         self.choix_largeur = tk.Scale(racine)
@@ -318,7 +323,7 @@ jeu."""
 
         return frame
 
-    # AUTRES MÉTHODES ##########################################################
+    # AUTRES MÉTHODES #########################################################
 
     def determine_taille_case(self):
         """Adapte la taille des images aux nombres de cases du plateau.

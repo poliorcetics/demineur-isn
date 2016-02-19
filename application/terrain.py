@@ -41,7 +41,7 @@ MÉTHODES
  - entourage(x, y)                   -> entourage, liste
  - place_nombre_mines()              -> self.terrain, liste
  - place_drapeau(x, y)               -> self.terrain, liste
- - supprime_drapeau(x, y)            -> self.terrain, liste 
+ - supprime_drapeau(x, y)            -> self.terrain, liste
 """
 
     def __init__(self, largeur, hauteur):
@@ -73,13 +73,7 @@ MÉTHODES
 
     def place_mines(self, nombre_mines):
         """Place les mines dans self.terrain de façon aléatoire, selon le \
-nombre demandé.
-
-Lève une ValueError si le nombre de mines demandé est plus grand que la \
-taille du terrain."""
-
-        # Si l'on demande trop de mines, on indique que c'est impossible
-        if nombre_mines > self.largeur * self.hauteur: raise ValueError("Trop de mines demandees")
+nombre demandé."""
 
         mines = 0
 
@@ -89,19 +83,19 @@ taille du terrain."""
             # On parcourt self.terrain
             for y in range(self.hauteur):
                 for x in range(self.largeur):
-                    
+
                     # On place une mine si il n'y en a pas déjà une et qu'il
-                    # reste un emplacement de libre avec une probabilité de 1/10
+                    # reste un emplacement de libre (P(MINE)=0.1)
                     if randint(0, 9) == MINE and self.terrain[y][x] != MINE \
                             and mines < nombre_mines:
-                        
-                        # On place la mine au point (x, y) 
+
+                        # On place la mine au point (x, y)
                         self.terrain[y][x] = MINE
                         mines += 1
-                        
+
         # On utilise shuffle pour mélanger les mines sur l'ensemble du terrain
-        # car en cas de petit nombre de mines sur un grand terrain, elles auront
-        # tendances à se placer dans les premières lignes
+        # car en cas de petit nombre de mines sur un grand terrain, elles
+        # auront tendances à se placer dans les premières lignes
         shuffle(self.terrain)
 
         return self.terrain
@@ -118,7 +112,8 @@ Aucune vérification sur la validité des coordonnées n'est effectuée."""
         y_moins = y - 1 if y - 1 >= 0 else self.hauteur + 1
         x_moins = x - 1 if x - 1 >= 0 else self.largeur + 1
 
-        entourage = [] # L'entourage de la case vérifiée                   
+        # L'entourage de la case vérifiée
+        entourage = []
 
         # Haut, à gauche
         try: entourage.append(self.terrain[y_moins][x_moins])
@@ -155,7 +150,7 @@ Aucune vérification sur la validité des coordonnées n'est effectuée."""
         return entourage
 
     def place_nombre_mines(self):
-        """"Met à jour self.terrain de façon à ce que chaque case n'étant pas \
+        """Met à jour self.terrain de façon à ce que chaque case n'étant pas \
 une mine ni un drapeau prenne en compte le nombre de mine autour d'elle."""
 
         # On parcourt self.terrain
@@ -181,16 +176,16 @@ une mine ni un drapeau prenne en compte le nombre de mine autour d'elle."""
 
 # Exemples en console, toutes les valeurs ici sont des valeurs de test.
 if __name__ == "__main__":
-    
+
     t = Terrain(10, 10)
     t.affiche_terrain()
 
     print("----------------")
-    
+
     t.place_mines(25)
     t.affiche_terrain()
 
     print("----------------")
-    
+
     t.place_nombre_mines()
     t.affiche_terrain()
