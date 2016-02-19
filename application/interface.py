@@ -1,15 +1,5 @@
 # -*- coding : utf-8 -*-
 
-"""
-TODO: binder le Terrain.terrain et le Interface.plateau -> dessine_plateau()
-"""
-
-import tkinter as tk
-
-from constantes import *
-from terrain import *
-import actions_user as action
-
 """ -- interface.py
 
 Permet d'initialiser et de contrôler l'interface du programme.
@@ -17,18 +7,26 @@ Permet d'initialiser et de contrôler l'interface du programme.
 classe:
     - Interface:
         - __init__(nom_app, largeur_min, hauteur_min, largeur, hauteur)
-        - determine_taille_case()
         - maj_images()
         - maj_max_mines()
+        - maj_case()
+        - maj_drapeau()
+
         - dessine_plateau()
         - dessine_case(x, y)
         - taille_scale(frame)
         - mines_scale(frame)
         - rejouer_button(frame)
         - reglages_frame()
-        - nouveau_plateau()
+
+        - determine_taille_case()
 """
 
+import tkinter as tk
+from os import sep # pour gérer l'accès aux ressources sur Windows/Unix
+
+from constantes import *
+import actions_user as action
 
 
 class Interface:
@@ -42,28 +40,34 @@ INITIALISATION
  - hauteur : int - hauteur du terrain en case
 
 VARIABLES
- - interface : Tk - la racine de la fenêtre
+ - interface : Tk - la racine de la fenêtre du programme
  - nouvelle_largeur : IntVar - la valeur de l'échelle de la largeur
  - nouvelle_hauteur : IntVar - la valeur de l'échelle de la hauteur
- - cases : list - liste des cases du plateau (objet Tk.Label)
+ - cases : dict - dictionnaire des cases du plateau. Forme: {Tk.Label: (x, y),}
  - taille_case : int - la taille de case à utiliser (15, 30, 45 ou 60) en pixel
  - chemin_images : str - le chemin vers le dossier contenant les images de la \
 taille choisie
- - base, drapeau, mine, mine_explose, case_[0..8]: tk.PhotoImage - les images \
-des différentes cases du jeu
+ - base, drapeau, mine, mine_explose : tk.PhotoImage - les images des \
+différentes cases du jeu
+ - cases_img : list - listes les cases chiffrées (0 à 8), tk.PhotoImage
+ - terrain : Terrain - un terrain généré dans terrain.py
 
 MÉTHODES
  - __init__(nom_app, largeur_min, hauteur_min, largeur, hauteur)    -> None
- - determine_taille_case()                  -> int
+
  - maj_images()                             -> None
  - maj_max_mines()                          -> None
+ - maj_case()                               -> None
+ - maj_drapeau()                            -> None
+
  - dessine_plateau()                        -> plateau, tk.Canvas
  - dessine_case(x, y)                       -> case, tk.Label
  - taille_scale(frame)                      -> None
  - mines_scale(frame)                       -> None
  - rejouer_button(frame)                    -> None
  - reglages_frame()                         -> frame, tk.Frame
- - nouveau_plateau()                        -> None
+
+ - determine_taille_case()                  -> int
 """
 
     def __init__(self, nom_app, largeur_min_fen, hauteur_min_fen,
@@ -87,33 +91,23 @@ MÉTHODES
         self.nouvelle_largeur = tk.IntVar(self.interface)
         self.nouvelle_hauteur = tk.IntVar(self.interface)
 
-        # Mise en place des images
-        self.cases = []
+        # Mise en place des images et des cases
+        self.cases = {}
         self.maj_images()
 
-        # Création du plateau de base
-        self.plateau = self.dessine_plateau()
+        # Préparation du jeu
+        self.terrain = None
 
         # On active le Frame de réglages
         self.reglages = self.reglages_frame()
 
-        print(self.cases)
+        # Création du plateau de base
+        self.plateau = self.dessine_plateau()
 
         # Une fois que tout est configuré, on lance l'interface
         self.interface.mainloop()
 
-    def determine_taille_case(self):
-        """Adapte la taille des images aux nombres de cases du plateau.
-
-Retourne un int: 15, 30, 45 ou 60 (taille des images utilisées, en pixel)."""
-        
-        if 10 <= max(self.hauteur, self.largeur) < 15: return 45
-        
-        if 15 <= max(self.hauteur, self.largeur) < 20: return 30
-
-        if 20 <= max(self.hauteur, self.largeur): return 15
-
-        return 60
+    # ÉVÈNEMENTS ###############################################################
 
     def maj_images(self):
         """Met à jour les images utilisées pour dessiner le plateau.
@@ -121,27 +115,29 @@ Appelée à chaque fois qu'un nouveau plateau est généré.
         """
 
         self.taille_case = self.determine_taille_case()
-        self.chemin_images = 'ressources/%s/' % self.taille_case
+        self.chemin_images = 'ressources%s%s%s' % (sep, self.taille_case, sep)
 
         self.base = tk.PhotoImage(file='%sbase.gif' % self.chemin_images)
         self.drapeau = tk.PhotoImage(file='%sdrapeau.gif' % self.chemin_images)
         self.mine = tk.PhotoImage(file='%smine.gif' % self.chemin_images)
         self.mine_explose = tk.PhotoImage(file='%smine_explose.gif' \
                                           % self.chemin_images)
-        self.case_0 = tk.PhotoImage(file='%scase_0.gif' % self.chemin_images)
-        self.case_1 = tk.PhotoImage(file='%scase_1.gif' % self.chemin_images)
-        self.case_2 = tk.PhotoImage(file='%scase_2.gif' % self.chemin_images)
-        self.case_3 = tk.PhotoImage(file='%scase_3.gif' % self.chemin_images)
-        self.case_4 = tk.PhotoImage(file='%scase_4.gif' % self.chemin_images)
-        self.case_5 = tk.PhotoImage(file='%scase_5.gif' % self.chemin_images)
-        self.case_6 = tk.PhotoImage(file='%scase_6.gif' % self.chemin_images)
-        self.case_7 = tk.PhotoImage(file='%scase_7.gif' % self.chemin_images)
-        self.case_8 = tk.PhotoImage(file='%scase_8.gif' % self.chemin_images)
+
+        self.cases_img = [
+                        tk.PhotoImage(file='%scase_0.gif' % self.chemin_images),
+                        tk.PhotoImage(file='%scase_1.gif' % self.chemin_images),
+                        tk.PhotoImage(file='%scase_2.gif' % self.chemin_images),
+                        tk.PhotoImage(file='%scase_3.gif' % self.chemin_images),
+                        tk.PhotoImage(file='%scase_4.gif' % self.chemin_images),
+                        tk.PhotoImage(file='%scase_5.gif' % self.chemin_images),
+                        tk.PhotoImage(file='%scase_6.gif' % self.chemin_images),
+                        tk.PhotoImage(file='%scase_7.gif' % self.chemin_images),
+                        tk.PhotoImage(file='%scase_8.gif' % self.chemin_images)
+                          ]
 
     def maj_max_mines(self, e):
         """Met à jour le nombre maximum de mines sélectionnables à chaque \
-changement de la largeur ou de la hauteur (via les scales de réglages).
-        """
+changement de la largeur ou de la hauteur (via les scales de réglages)."""
 
         self.largeur = self.nouvelle_largeur.get()
         self.hauteur = self.nouvelle_hauteur.get()
@@ -149,10 +145,78 @@ changement de la largeur ou de la hauteur (via les scales de réglages).
         self.nombre_mines.destroy()
         self.mines_scale(self.reglages)
 
+    def maj_case(self, c):
+        """Lors d'un clic gauche sur une case, celle-ci est révélée si elle \
+n'est pas un drapeau."""
+
+        # On récupère la case cliquée, ses coordonnées et la case du terrain
+        # correspondante
+        case = c.widget
+
+        x = self.cases[case][0]
+        y = self.cases[case][1]
+
+        valeur_case = self.terrain.terrain[y][x]
+
+        # S'il y a un drapeau, on ne fait rien
+        if valeur_case == DRAPEAU:
+            return
+        # Si ce n'est pas un drapeau, alors on ajoute la case à la liste des
+        # cases du terrain vues
+        # Si c'est une mine on affiche une mine (le fait d'avoir perdu n'est pas
+        # encore pris en compte)
+        elif valeur_case == MINE:
+            case['image'] = self.mine
+            self.terrain.pos_vues.append((x, y))
+            return
+        # Si ce n'est ni une mine ni un drapeau, on affiche la case chiffrée
+        # correspondante
+        else:
+            case['image'] = self.cases_img[valeur_case]
+            self.terrain.pos_vues.append((x, y))
+            return
+
+    def maj_drapeau(self, c):
+        """Place ou supprime un drapeau si il est possible d'en placer/\
+supprimer un."""
+
+        # On récupère la case cliquée, ses coordonnées et la case du terrain
+        # correspondante
+        case = c.widget
+
+        x = self.cases[case][0]
+        y = self.cases[case][1]
+
+        valeur_case = self.terrain.terrain[y][x]
+
+        # S'il y a déjà un drapeau, on le supprime et on remplace par l'ancienne
+        # valeur
+        if valeur_case == DRAPEAU:
+            case['image'] = self.base
+            self.terrain.terrain[y][x] = self.terrain.terrain_complet[y][x]
+            return
+
+        # S'il ny'a pas de drapeau et que la case est encore cachée, on peut
+        # placer un drapeau
+        if not ((x, y) in self.terrain.pos_vues):
+            case['image'] = self.drapeau
+            self.terrain.terrain[y][x] = DRAPEAU
+            return
+
+    # ÉLÉMENTS DE L'INTERFACE ##################################################
+
     def dessine_plateau(self):
         """Dessine le plateau du jeu et y place les cases avec l'image de base."""
 
+        # On supprime self.plateau s'il existe déjà afin de le 'nettoyer'
+        try: self.plateau.destroy()
+        except: pass
+
+        self.largeur = self.nouvelle_largeur.get()
+        self.hauteur = self.nouvelle_hauteur.get()
+
         self.maj_images()
+        self.cases.clear()
 
         # Initialise le plateau du jeu
         plateau = tk.Canvas(self.interface,
@@ -162,23 +226,34 @@ changement de la largeur ou de la hauteur (via les scales de réglages).
         plateau.grid(column=0, row=0, padx=10, pady=10)
 
         # Dessine les cases du jeu
-        self.cases = [[self.dessine_case(plateau, x, y)
-                      for x in range(self.largeur)]
-                      for y in range(self.hauteur)]
+        for y in range(self.hauteur):
+            for x in range(self.largeur):
+                # Dessine la case de coordonnées (x, y)
+                case = self.dessine_case(plateau, x, y)
+                # Associe la case à ses coordonnées (x, y)
+                self.cases[case[0]] = case[1]
+
+                del case
+
+        # Génère un terrain adapté à la grille choisie
+        self.terrain = action.nouveau_terrain(self.largeur,
+                                              self.hauteur,
+                                              self.nombre_mines.get())
 
         return plateau
 
     def dessine_case(self, racine, x, y):
         """Dessine une case simple."""
 
-        case = tk.Label(racine,
-                        relief='raised',
-                        borderwidth=1,
-                        image=self.base)
+        case = tk.Label(racine, borderwidth=1, relief='sunken',image=self.base)
+
+        # Lie les cases aux actions possible
+        case.bind('<Button-1>', self.maj_case)
+        case.bind('<Button-2>', self.maj_drapeau)
 
         case.grid(column=x, row=y)
 
-        return case
+        return case, (x, y)
 
     def mines_scale(self, racine):
         """Place l'échelle pour choisir le nombre de mines dans la partie."""
@@ -222,7 +297,7 @@ pour mettre à jour l'échelle du choix du nombre de mines à chaque changement.
         # Le bouton pour rejouer
         nouvelle_partie = tk.Button(racine)
         nouvelle_partie['text'] = 'Nouvelle partie'
-        nouvelle_partie['command'] = self.nouveau_plateau
+        nouvelle_partie['command'] = self.dessine_plateau
         nouvelle_partie.grid(column=0, row=3, pady=5)
 
     def reglages_frame(self):
@@ -243,24 +318,22 @@ jeu."""
 
         return frame
 
+    # AUTRES MÉTHODES ##########################################################
 
-    def nouveau_plateau(self):
-        """Regénère un plateau après avoir détruit l'ancien. Prend en compte \
-les choix de hauteur et de largeur fait via les échelles."""
+    def determine_taille_case(self):
+        """Adapte la taille des images aux nombres de cases du plateau.
 
-        self.largeur = self.nouvelle_largeur.get()
-        self.hauteur = self.nouvelle_hauteur.get()
+Retourne un int: 15, 30, 45 ou 60 (taille des images utilisées, en pixel)."""
 
-        self.plateau.destroy()
-        self.plateau = self.dessine_plateau()
+        if 10 <= max(self.hauteur, self.largeur) < 15: return 45
 
+        if 15 <= max(self.hauteur, self.largeur) < 20: return 30
 
+        if 20 <= max(self.hauteur, self.largeur): return 15
 
-
-
-
+        return 60
 
 # Valeurs de test uniquement
 if __name__ == '__main__':
 
-    fenetre = Interface(NOM_APP, LARGEUR_MIN, HAUTEUR_MIN, 5, 5)
+    Interface(NOM_APP, LARGEUR_MIN, HAUTEUR_MIN, 5, 5)

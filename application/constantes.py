@@ -7,7 +7,6 @@ Initialise les constantes représentants les différents états possibles du jeu
  - MINE_EXPLOSE
  - DRAPEAU
  - CASE
- - INCONNU
 
 Initialise les constantes servant à l'interface du jeu:
  - NOM_APP
@@ -31,11 +30,9 @@ MINE_EXPLOSE = 10
 # Représente un drapeau (ajoutable/supprimable par le joueur)
 DRAPEAU = -1
 
-# Représente une case de base vide visible.
+# Représente une case de base vide
 CASE = 0
 
-# Représente une case inconnue de l'utilisateur
-INCONNU = -2
 
 #############################
 # CONSTANTES DE L'INTERFACE #
