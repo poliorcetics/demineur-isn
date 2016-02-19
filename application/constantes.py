@@ -15,7 +15,8 @@ Initialise les constantes servant à l'interface du jeu:
  - HAUTEUR_MIN
 
 Initialise les constantes servant aux réglages du jeu
- - 
+ - MIN_CASES
+ - MAX_CASES
 """
 #####################
 # CONSTANTES DU JEU #
@@ -58,17 +59,3 @@ MIN_CASES = 5
 
 # Nombres maximum de cases (largeur comme hauteur)
 MAX_CASES = 30
-
-
-
-
-
-
-
-
-
-
-
-
-
-
