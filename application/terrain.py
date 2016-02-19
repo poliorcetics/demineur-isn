@@ -6,7 +6,7 @@ from constantes import * # Les constantes représentants les éléments du jeu
 
 """ -- terrain.py
 
-Permet d'initaliser le terrain de jeu du démineur.
+Permet d'initaliser et de contrôler le terrain de jeu du démineur.
 
 classe:
     - Terrain:
@@ -21,26 +21,33 @@ classe:
 
 
 class Terrain:
-    """ >> class Terrain(Object)
+    """ >> classe Terrain(Object)
 
-largeur : int - largeur du terrain
-hauteur : int - hauteur du terrain
+INITIALISATION
+ - largeur : int - largeur du terrain en case
+ - hauteur : int - hauteur du terrain en case
 
-pos_mines : list - coordonnées (x, y) représentant les positions des \
+VARIABLES
+ - pos_mines : list - coordonnées (x, y) représentant les positions des \
 différentes mines
-terrain_mine : list - le terrain constitué des mines et des cases inconnues
-terrain_complet : list - le terrain constitué des mines et de leur entourage
+ - terrain_mine : list - le terrain constitué des mines et des cases inconnues
+ - terrain_complet : list - le terrain constitué des mines et de leur entourage
 
-- __init__(largeur, hauteur)        -> None
-- affiche_terrain()                 -> None
-- place_mines(nombre_mines=10)      -> self.terrain, liste
-- entourage(x, y)                   -> entourage, liste
-- place_nombre_mines()              -> self.terrain, liste
-- place_drapeau(x, y)               -> self.terrain, liste
-- supprime_drapeau(x, y)            -> self.terrain, liste 
+MÉTHODES
+ - __init__(largeur, hauteur)        -> None
+ - affiche_terrain()                 -> None
+ - place_mines(nombre_mines=10)      -> self.terrain, liste
+ - entourage(x, y)                   -> entourage, liste
+ - place_nombre_mines()              -> self.terrain, liste
+ - place_drapeau(x, y)               -> self.terrain, liste
+ - supprime_drapeau(x, y)            -> self.terrain, liste 
 """
 
     def __init__(self, largeur, hauteur):
+        """Initialisation:
+ - largeur : int - largeur du terrain en case
+ - hauteur : int - hauteur du terrain en case
+"""
 
         self.largeur = largeur
         self.hauteur = hauteur
