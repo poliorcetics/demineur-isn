@@ -1,4 +1,4 @@
-# Fichier de rapport du travail d'**Alexis**
+# Fichier de rapport du travail d'Alexis
 
 _______________________________________________________________________________
 
@@ -127,7 +127,7 @@ _______________________________________________________________________________
 
 ## 18-19/02/2016
 
-#### 1) MàJ de constantes.py, ajout des ressources, premiière version de l'interface
+#### 1) MàJ de constantes.py, ajout des ressources, première version de l'interface
 
 Ajout des constantes suivantes dans `constantes.py`:
 + `NOM_APP`: le nom de l'application (son titre),
@@ -228,3 +228,73 @@ supprimer un."""
         self.terrain.terrain[y][x] = DRAPEAU
         return
 ```
+
+#### 4) Corrections
+
++ Du fait de l'ajout de l'interface, il n'est plus possible de demander le placement de plus de mines que possibles, on peut donc retirer le test correspondant dans le fichier `terrain.py`
++ Passage de l'ensemble des fichiers `*.py` en mode `PEP-8 compliant`. (Oui c'est pour le fun)
+
+_______________________________________________________________________________
+
+## 20/02/2016
+
+#### 1) Passage en impératif
+
+Recodage de l'ensemble du projet pour tout passer en `programmation impérative`. Utilisation de `variables globales` avec des `fonctions` en lieu et place de `classes`.
+
+**Pourquoi ?**:
+
+L'usage des `classes` était difficile et mal pensé, notre niveau pas assez élevé pour permettre de corriger cela rapidement et de plus l'usage de `POO` ici n'était pas nécessaire.
+
+**Ce qui a été fait**:
+
+J'ai supprimé les classes `Terrain` et `Interface` et les aient remplacées par des `variables globales` et des `fonctions` codées plus intelligemment et plus clairement. Le format de la documentation a également été revu, elle est donc maintenant (normalement) **très très très claire** et je l'espère complète (ce sera corrigé si ce n'est pas le cas).
+
+J'ai aussi commencé à lier l'interface / le générateur de terrain avec les actions de du joueur, via le fichier `actions_joueur.py`. (Ceci était nécessaire pour arriver au même endroit que là où nous en étions en version `POO`.)
+
+**Problèmes recontrées**:
+
+À côté de toute la réflexion à faire pour réécrire le code, j'ai rencontré un `bug` bien étrange (et connu du net, stackoverflow a plus d'une quinzaine de sujet dessus).
+
+Ce code là:
+```python
+cases_img = {
+    0:        tk.PhotoImage(file='%scase_0.gif' % chemin),
+    1:        tk.PhotoImage(file='%scase_1.gif' % chemin),
+    2:        tk.PhotoImage(file='%scase_2.gif' % chemin),
+    3:        tk.PhotoImage(file='%scase_3.gif' % chemin),
+    4:        tk.PhotoImage(file='%scase_4.gif' % chemin),
+    5:        tk.PhotoImage(file='%scase_5.gif' % chemin),
+    6:        tk.PhotoImage(file='%scase_6.gif' % chemin),
+    7:        tk.PhotoImage(file='%scase_7.gif' % chemin),
+    8:        tk.PhotoImage(file='%scase_8.gif' % chemin),
+    BASE:     tk.PhotoImage(file='%sbase.gif' % chemin),
+    DRAPEAU:  tk.PhotoImage(file='%sdrapeau.gif' % chemin),
+    MINE:     tk.PhotoImage(file='%smine.gif' % chemin),
+    PERDU:    tk.PhotoImage(file='%sperdu.gif' % chemin)
+}
+```
+ne fonctionnera jamais car les images sont supprimées par le `Garbage Collector`, ne détectant pas de parents, décide de les supprimer malgré le fait qu'elles soient référencées dans un dictionnaire. La correction est assez simple, il suffit de rajouter un parent:
+```python
+cases_img = {
+    0:        tk.PhotoImage(master=racine, file='%scase_0.gif' % chemin),
+    1:        tk.PhotoImage(master=racine, file='%scase_1.gif' % chemin),
+    2:        tk.PhotoImage(master=racine, file='%scase_2.gif' % chemin),
+    3:        tk.PhotoImage(master=racine, file='%scase_3.gif' % chemin),
+    4:        tk.PhotoImage(master=racine, file='%scase_4.gif' % chemin),
+    5:        tk.PhotoImage(master=racine, file='%scase_5.gif' % chemin),
+    6:        tk.PhotoImage(master=racine, file='%scase_6.gif' % chemin),
+    7:        tk.PhotoImage(master=racine, file='%scase_7.gif' % chemin),
+    8:        tk.PhotoImage(master=racine, file='%scase_8.gif' % chemin),
+    BASE:     tk.PhotoImage(master=racine, file='%sbase.gif' % chemin),
+    DRAPEAU:  tk.PhotoImage(master=racine, file='%sdrapeau.gif' % chemin),
+    MINE:     tk.PhotoImage(master=racine, file='%smine.gif' % chemin),
+    PERDU:    tk.PhotoImage(master=racine, file='%sperdu.gif' % chemin)
+}
+```
+
+**Fin de la réécriture**:
+
+Tout est de nouveau fonctionnel mais cette fois sans `POO`. Pour obtenir la même fenêtre avec les mêmes options qu'auparavant (placement/suppression de drapeau, découverte des cases, etc...) il faut lancer le fichier `actions_joueur.py` et non plus le fichier `interface.py`.
+
+_______________________________________________________________________________

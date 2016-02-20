@@ -2,195 +2,192 @@
 
 """ -- terrain.py
 
-Permet d'initaliser et de contrôler le terrain de jeu du démineur.
+Permet de générer un terrain miné avec les valeurs des cases calculées.
 
-classe:
-    - Terrain:
-        - __init__(largeur, hauteur)
-        - affiche_terrain()
-        - places_mines(nombres_mines)
-        - entourage(x, y)
-        - place_nombre_mines()
-        - place_drapeau(x, y)
-        - supprime_drapeau(x, y)
+FONCTIONS
+
+- entourage_case(terrain: list, x: int, y: int)               -> (list),
+- place_mines(terrain: list, nb_mines: int)                   -> (list),
+- place_nb_mines(terrain: list)                               -> (list, tuple),
+- genere_terrain(largeur: int, hauteur: int, nb_mines: int)   -> (list, tuple),
+- affiche_terrain(terrain: list)                              -> (None).
 """
 
-from random import randint, shuffle # Pour effectuer l'aléatoire du
-                                    # placement des mines
-from copy import deepcopy # Pour éviter un problème de référence lors de copies
-from constantes import * # Les constantes représentants les éléments du jeu
+
+# Pour effectuer l'aléatoire du placement des mines
+from random import randint, shuffle
+# Les constantes représentants les éléments du jeu
+from constantes import *
 
 
-class Terrain:
-    """ >> classe Terrain(Object)
+def entourage_case(terrain: list, x: int, y: int) -> (list):
+    """Retourne l'entourage d'une case donnée dans un terrain donné.
 
-INITIALISATION
- - largeur : int - largeur du terrain en case
- - hauteur : int - hauteur du terrain en case
+Arguments:
+ - terrain      - list - le terrain dans lequel agir,
+ - x            - int - la coordonnée x de la case dont on veut l'entourage,
+ - y            - int - la coordonnée y de la case dont on veut l'entourage.
 
-VARIABLES
- - pos_mines : list - coordonnées (x, y) représentant les positions des \
-différentes mines
- - pos_vues : list - coordonnées des cases découvertes par le joueur
- - terrain_complet : list - le terrain constitué des mines et de leur entourage
+Retourne:
+ - entourage    - list - la liste contenant l'entourage de la case."""
 
-MÉTHODES
- - __init__(largeur, hauteur)        -> None
- - affiche_terrain()                 -> None
- - place_mines(nombre_mines=10)      -> self.terrain, liste
- - entourage(x, y)                   -> entourage, liste
- - place_nombre_mines()              -> self.terrain, liste
- - place_drapeau(x, y)               -> self.terrain, liste
- - supprime_drapeau(x, y)            -> self.terrain, liste 
-"""
+    # Si y-1 ou x-1 = -1, on risque d'accéder au mauvais élément de terrain
+    # lors de la vérification de l'entourage de la case donc on le place
+    # volontairement en dehors des possibilités d'accès afin de lever une
+    # erreur et d'ajouter une CASE au lieu de recompter une MINE lors de
+    # la vérification
+    y_moins = y - 1 if y - 1 >= 0 else len(terrain)
+    x_moins = x - 1 if x - 1 >= 0 else len(terrain[0])
 
-    def __init__(self, largeur, hauteur):
-        """Initialisation:
- - largeur : int - largeur du terrain en case
- - hauteur : int - hauteur du terrain en case
-"""
+    # L'entourage de la case vérifiée
+    entourage = []
 
-        self.largeur = largeur
-        self.hauteur = hauteur
+    # Haut, à gauche
+    try: entourage.append(terrain[y_moins][x_moins])
+    except IndexError: entourage.append(CASE)
 
-        self.pos_mines = []
-        self.pos_vues = []
-        self.terrain_complet = []
+    # Haut, au milieu
+    try: entourage.append(terrain[y_moins][x])
+    except IndexError: entourage.append(CASE)
 
-        # Initialise le terrain avec des tableaux remplis de cases INCONNU
-        self.terrain = [[CASE] * self.largeur for _ in range(self.hauteur)]
+    # Haut, à droite
+    try: entourage.append(terrain[y_moins][x+1])
+    except IndexError: entourage.append(CASE)
 
-    def affiche_terrain(self, terrain):
-        """Affiche le terrain formaté en console et le retourne."""
+    # Milieu, à droite
+    try: entourage.append(terrain[y][x+1])
+    except IndexError: entourage.append(CASE)
 
-        for y in terrain:
-            for x in y:
-                print(x, end=' ')
-            print()
+    # Bas, à droite
+    try: entourage.append(terrain[y+1][x+1])
+    except IndexError: entourage.append(CASE)
+
+    # Bas, au milieu
+    try: entourage.append(terrain[y+1][x])
+    except IndexError: entourage.append(CASE)
+
+    # Bas, à gauche
+    try: entourage.append(terrain[y+1][x_moins])
+    except IndexError: entourage.append(CASE)
+
+    # Milieu, à gauche
+    try: entourage.append(terrain[y][x_moins])
+    except IndexError: entourage.append(CASE)
+
+    return entourage
+
+
+def place_mines(terrain: list, nb_mines: int) -> (list):
+    """Place le nombre de mines demandé dans un terrain donné.
+
+Arguments:
+ - terrain          - list - le terrain dans lequel on veut placer les mines,
+ - nb_mines         - int - le nombre de mines à placer.
+
+ Retourne:
+  - terrain         - list - le terrain avec les mines placées."""
+
+    try:
+        # On vérifie que le nombre de mines demandés est correct
+        assert(not (len(terrain[0]) * len(terrain) < nb_mines))
+    except AssertionError:
+        # Sinon on réduit le nombres de mines à la taille du terrain
+        nb_mines = len(terrain[0]) * len(terrain)
+
+    mines = 0
+
+    # Tant que l'on a pas placé toutes les mines demandées
+    while mines < nb_mines:
+
+        # Parcours du terrain
+        for y in range(len(terrain)):
+            for x in range(len(terrain[0])):
+
+                # On place une mine si il n'y en a pas déjà une et qu'il reste
+                # un emplacement de libre (P(MINE)=0.1)
+                if randint(0, 9) == MINE and terrain[y][x] != MINE \
+                        and mines < nb_mines:
+
+                    # On place la mine à la case (x, y)
+                    terrain[y][x] = MINE
+
+                    # Pour éviter de placer toutes les mines au début
+                    shuffle(terrain)
+
+                    # On prend en compte la mine ajoutée
+                    mines += 1
+
+    return terrain
+
+
+def place_nb_mines(terrain: list) -> (list, tuple):
+    """Place le nombre de mines autour des cases dans chaque case du terrain \
+qui n'est pas une mine, sinon ajoute la position à la liste des cases minées.
+
+Argument:
+ - terrain      - list - le terrain dans lequel on veut l'entourage des cases.
+
+Retourne:
+ - terrain       - list - le terrain avec les valeurs d'entourage calculées,
+ - pos_mines     - tuple - les positions des mines."""
+
+    pos_mines = []
+
+    # Parcours du terrain
+    for y in range(len(terrain)):
+        for x in range(len(terrain[0])):
+
+            # Si la case n'est pas une mine ni un drapeau, on place le nombre
+            # de mines entourant la case dans la case
+            if DRAPEAU < terrain[y][x] < MINE:
+                terrain[y][x] = entourage_case(terrain, x, y).count(MINE)
+            # Sinon on ajoute la position à la liste des mines
+            else:
+                pos_mines.append((x, y))
+
+    return terrain, tuple(pos_mines)
+
+
+def genere_terrain(largeur: int, hauteur: int, nb_mines: int) -> (list, tuple):
+    """Génère un terrain comportant nb_mines dans un jeu de largeur * hauteur.
+
+Arguments:
+ - largeur          - int - largeur en case du terrain,
+ - hauteur          - int - hauteur en case du terrain,
+ - nb_mines         - int - le nombre de mines à placer dans le terrain.
+
+Retourne:
+ - terrain          - list - le terrain miné avec ses entourages calculés,
+ - pos_mines        - tuple - les positions des mines."""
+
+    # On génère un terrain vide
+    terrain = [[CASE] * largeur for _ in range(hauteur)]
+
+    # On y place les mines
+    terrain = place_mines(terrain, nb_mines)
+
+    # On calcule l'entourage et on récupère le terrain et la position des mines
+    terrain, pos_mines = place_nb_mines(terrain)
+
+    return terrain, pos_mines
+
+
+def affiche_terrain(terrain: list) -> (None):
+    """Affiche un terrain formaté en console.
+
+Argument:
+ - terrain      - list - le terrain à afficher."""
+
+    for y in terrain:
+        for x in y:
+            print(x, end=' ')
         print()
+    print()
 
-        return terrain
+# Valeurs de tests uniquement
+if __name__ == '__main__':
 
-    def place_mines(self, nombre_mines):
-        """Place les mines dans self.terrain de façon aléatoire, selon le \
-nombre demandé.
-
-Lève une ValueError si le nombre de mines demandé est plus grand que la \
-taille du terrain."""
-
-        # Si l'on demande trop de mines, on indique que c'est impossible
-        if nombre_mines > self.largeur * self.hauteur: raise ValueError("Trop de mines demandees")
-
-        mines = 0
-
-        # Tant que l'on a pas placé toutes les mines demandées
-        while mines < nombre_mines:
-
-            # On parcourt self.terrain
-            for y in range(self.hauteur):
-                for x in range(self.largeur):
-                    
-                    # On place une mine si il n'y en a pas déjà une et qu'il
-                    # reste un emplacement de libre avec une probabilité de 1/10
-                    if randint(0, 9) == MINE and self.terrain[y][x] != MINE \
-                            and mines < nombre_mines:
-                        
-                        # On place la mine au point (x, y) 
-                        self.terrain[y][x] = MINE
-                        mines += 1
-                        
-        # On utilise shuffle pour mélanger les mines sur l'ensemble du terrain
-        # car en cas de petit nombre de mines sur un grand terrain, elles auront
-        # tendances à se placer dans les premières lignes
-        shuffle(self.terrain)
-
-        return self.terrain
-
-    def entourage(self, x, y):
-        """Retourne l'entourage d'une case donnée sous forme d'une liste. \
-Aucune vérification sur la validité des coordonnées n'est effectuée."""
-
-        # Si y-1 ou x-1 = -1, on risque d'accéder au mauvais élément de
-        # self.terrain lors de la vérification de l'entourage de la case
-        # donc on le place volontairement en dehors des possibilités
-        # d'accès afin de lever une erreur et d'ajouter une CASE au lieu
-        # d'une potentielle MINE lors de la vérification
-        y_moins = y - 1 if y - 1 >= 0 else self.hauteur + 1
-        x_moins = x - 1 if x - 1 >= 0 else self.largeur + 1
-
-        entourage = [] # L'entourage de la case vérifiée                   
-
-        # Haut, à gauche
-        try: entourage.append(self.terrain[y_moins][x_moins])
-        except IndexError: entourage.append(CASE)
-
-        # Haut, au milieu
-        try: entourage.append(self.terrain[y_moins][x])
-        except IndexError: entourage.append(CASE)
-
-        # Haut, à droite
-        try: entourage.append(self.terrain[y_moins][x+1])
-        except IndexError: entourage.append(CASE)
-
-        # Milieu, à droite
-        try: entourage.append(self.terrain[y][x+1])
-        except IndexError: entourage.append(CASE)
-
-        # Bas, à droite
-        try: entourage.append(self.terrain[y+1][x+1])
-        except IndexError: entourage.append(CASE)
-
-        # Bas, au milieu
-        try: entourage.append(self.terrain[y+1][x])
-        except IndexError: entourage.append(CASE)
-
-        # Bas, à gauche
-        try: entourage.append(self.terrain[y+1][x_moins])
-        except IndexError: entourage.append(CASE)
-
-        # Milieu, à gauche
-        try: entourage.append(self.terrain[y][x_moins])
-        except IndexError: entourage.append(CASE)
-
-        return entourage
-
-    def place_nombre_mines(self):
-        """"Met à jour self.terrain de façon à ce que chaque case n'étant pas \
-une mine ni un drapeau prenne en compte le nombre de mine autour d'elle."""
-
-        # On parcourt self.terrain
-        for y in range(self.hauteur):
-            for x in range(self.largeur):
-
-                # La case n'est ni une mine ni un drapeau:
-                # On procède à la vérification.
-                # Pour cela, on vérifie les 8 cases l'entourant et on ajoute
-                # leur contenu à 'entourage' si elles sont accessibles
-                # (pas d'IndexError), sinon CASE: pas une mine
-                if self.terrain[y][x] < MINE:
-                    self.terrain[y][x] = self.entourage(x, y).count(MINE)
-                # Sinon on ajoute la position à la liste des mines
-                else:
-                    self.terrain[y][x] = MINE
-                    self.pos_mines.append((x, y))
-
-        # self.terrain_complet ne doit pas être modifiable
-        self.terrain_complet = tuple(deepcopy(self.terrain))
-
-        return self.terrain
-
-# Exemples en console, toutes les valeurs ici sont des valeurs de test.
-if __name__ == "__main__":
-    
-    t = Terrain(10, 10)
-    t.affiche_terrain()
-
-    print("----------------")
-    
-    t.place_mines(25)
-    t.affiche_terrain()
-
-    print("----------------")
-    
-    t.place_nombre_mines()
-    t.affiche_terrain()
+    affiche_terrain(genere_terrain(8, 8, 10)[0])
+    affiche_terrain(genere_terrain(10, 10, 10)[0])
+    affiche_terrain(genere_terrain(5, 5, 15)[0])
+    affiche_terrain(genere_terrain(30, 30, 150)[0])

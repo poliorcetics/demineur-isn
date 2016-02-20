@@ -2,338 +2,392 @@
 
 """ -- interface.py
 
-Permet d'initialiser et de contrôler l'interface du programme.
+Permet de lancer l'interface et de la mettre à jour lors d'actions.
 
-classe:
-    - Interface:
-        - __init__(nom_app, largeur_min, hauteur_min, largeur, hauteur)
-        - maj_images()
-        - maj_max_mines()
-        - maj_case()
-        - maj_drapeau()
+VARIABLES GLOBALES
 
-        - dessine_plateau()
-        - dessine_case(x, y)
-        - taille_scale(frame)
-        - mines_scale(frame)
-        - rejouer_button(frame)
-        - reglages_frame()
+ - fenetre          - tk.Tk - la fenêtre principale,
+ - fr_reglages      - tk.Frame - le panneau de réglages,
+ - cv_plateau       - tk.Canvas - le plateau de jeu,
+ - sc_largeur       - tk.Scale - l'échelle du choix de largeur,
+ - sc_hauteur       - tk.Scale - l'échelle du choix de hauteur,
+ - sc_mines         - tk.Scale - l'échelle du choix du nombre de mines,
+ - but_rejouer      - tk.Button - le bouton pour rejouer,
+ - cases            - dict(tk.Label: (int, int)) - les cases et leur position,
+ - cases_taille     - int - la taille en pixel des côtés des cases,
+ - cases_img        - dict(int: tk.PhotoImage) - les type de case et les \
+images correspondantes.
 
-        - determine_taille_case()
+FONCTIONS
+
+    MISES À JOUR DE VARIABLES
+ - maj_taille_cases(largeur: int, hauteur: int)                  -> (bool),
+ - maj_images(racine: tk.Canvas, taille: int)                    -> (None),
+
+    ÉVÈNEMENTS
+ - event_max_mines(event: tk.Event)                              -> (None),
+ - event_case(c: tk.Event)                                       -> (None),
+ - event_drapeau(c: tk.Event)                                    -> (None),
+
+    PLATEAU DU JEU
+ - label_case(racine: tk.Canvas, x: int, y: int)                 -> (tk.Label),
+ - canvas_plateau(racine: tk.Tk,
+                  largeur: int, hauteur: int,
+                  col=0, lig=0)                                  -> (None),
+
+    RÉGLAGES DU JEU
+ - scale_largeur()                                               -> (None),
+ - scale_hauteur()                                               -> (None),
+ - scale_mines()                                                 -> (None),
+ - button_rejouer()                                              -> (None),
+ - frame_reglages(col=0, lig=0)                                  -> (None),
+
+    INTERFACE GÉNÉRALE
+ - interface(titre: str, largeur_min: int, hauteur_min: int)     -> (None).
 """
 
+# Pour gérer l'accès aux ressources sur Windows/Unix
+from os import sep
+# Les fonctions pour l'interface graphique
 import tkinter as tk
-from os import sep # pour gérer l'accès aux ressources sur Windows/Unix
-
+# Les constantes représentants les éléments du jeu
 from constantes import *
-import actions_user as action
+# Les actions de l'utilisateur
+import actions_joueur as actions
+
+# LES VARIABLES GLOBALES ######################################################
+
+# La fenêtre principale
+fenetre = tk.Tk()
+
+# Les composants de la fenêtre principle
+fr_reglages = tk.Frame(fenetre)
+cv_plateau = tk.Canvas(fenetre)
+
+# Les échelles pour les réglages
+sc_largeur = tk.Scale(fr_reglages)
+sc_hauteur = tk.Scale(fr_reglages)
+sc_mines = tk.Scale(fr_reglages)
+
+# Le bouton pour rejouer
+but_rejouer = tk.Button(fr_reglages)
+
+# Les cases du plateau
+cases = {}
+
+# La taille des cases du plateau
+cases_taille = 0
+
+# Les images utilisables dans les cases du plateau
+cases_img = {}
 
 
-class Interface:
-    """ >> classe Interface(Object)
+# LES MISES À JOUR DE VARIABLES ###############################################
 
-INITIALISATION
- - nom_app : str - titre de l'application
- - largeur_min_fen : int - largeur minimale de la fenêtre en pixel
- - hauteur_min_fen : int - hauteur minimale de la fenêtre en pixel
- - largeur : int - largeur du terrain en case
- - hauteur : int - hauteur du terrain en case
 
-VARIABLES
- - interface : Tk - la racine de la fenêtre du programme
- - nouvelle_largeur : IntVar - la valeur de l'échelle de la largeur
- - nouvelle_hauteur : IntVar - la valeur de l'échelle de la hauteur
- - cases : dict - dictionnaire des cases du plateau. Forme: {Tk.Label: (x, y),}
- - taille_case : int - la taille de case à utiliser (15, 30, 45 ou 60) en pixel
- - chemin_images : str - le chemin vers le dossier contenant les images de la \
-taille choisie
- - base, drapeau, mine, mine_explose : tk.PhotoImage - les images des \
-différentes cases du jeu
- - cases_img : list - listes les cases chiffrées (0 à 8), tk.PhotoImage
- - terrain : Terrain - un terrain généré dans terrain.py
+def maj_taille_cases(largeur: int, hauteur: int) -> (bool):
+    """Adapte la taille des images au nombre de cases du plateau.
 
-MÉTHODES
- - __init__(nom_app, largeur_min, hauteur_min, largeur, hauteur)    -> None
+Arguments:
+ - largeur          - int - largeur en case du terrain,
+ - hauteur          - int - hauteur en case du terrain.
 
- - maj_images()                             -> None
- - maj_max_mines()                          -> None
- - maj_case()                               -> None
- - maj_drapeau()                            -> None
+Modifie:
+ - cases_taille     - int - la taille en pixel du côté d'une case.
 
- - dessine_plateau()                        -> plateau, tk.Canvas
- - dessine_case(x, y)                       -> case, tk.Label
- - taille_scale(frame)                      -> None
- - mines_scale(frame)                       -> None
- - rejouer_button(frame)                    -> None
- - reglages_frame()                         -> frame, tk.Frame
+Retoune:
+ - bool             - bool - True si la taille a bien changé, False sinon."""
 
- - determine_taille_case()                  -> int
-"""
+    global cases_taille
 
-    def __init__(self, nom_app, largeur_min_fen, hauteur_min_fen,
-                 largeur, hauteur):
-        """Initialisation:
- - nom_app : str - titre de l'application
- - largeur_min_fen : int - largeur minimale de la fenêtre en pixel
- - hauteur_min_fen : int - hauteur minimale de la fenêtre en pixel
- - largeur : int - largeur du terrain en case
- - hauteur : int - hauteur du terrain en case
-"""
+    # On récupère la valeur du plus grand côté
+    cote_max = max(largeur, hauteur)
 
-        # Création de la fenêtre principale
-        self.interface = tk.Tk()
-        self.interface.minsize(largeur_min_fen, hauteur_min_fen)
-        self.interface.title(nom_app)
+    # On ajuste la taille du côté d'une case en fonction de cette valeur
+    if 10 <= cote_max < 15:
+        cases_taille = 45
+        return True
+    elif 15 <= cote_max < 20:
+        cases_taille = 30
+        return True
+    elif 20 <= cote_max:
+        cases_taille = 15
+        return True
+    else:
+        cases_taille = 60
+        return True
 
-        # Variables du plateau
-        self.largeur = largeur
-        self.hauteur = hauteur
-        self.nouvelle_largeur = tk.IntVar(self.interface)
-        self.nouvelle_hauteur = tk.IntVar(self.interface)
+    # Erreur d'ajustement
+    return False
 
-        # Mise en place des images et des cases
-        self.cases = {}
-        self.maj_images()
 
-        # Préparation du jeu
-        self.terrain = None
+def maj_images(racine: tk.Canvas, taille: int) -> (None):
+    """Adapte les images utilisées pour afficher le terrain.
 
-        # On active le Frame de réglages
-        self.reglages = self.reglages_frame()
+Arguments:
+ - racine=cv_plateau    - tk.Canvas - juste là pour éviter un bug de \
+référencement des images dans la mémoire
+ - taille               - int - la taille en pixel des images
 
-        # Création du plateau de base
-        self.plateau = self.dessine_plateau()
+Modifie:
+ - cases_img            - dict - les liens vers les images du jeu."""
 
-        # Une fois que tout est configuré, on lance l'interface
-        self.interface.mainloop()
+    global cases_img
 
-    # ÉVÈNEMENTS ###############################################################
+    # Libère les anciennes images chargés
+    cases_img.clear()
 
-    def maj_images(self):
-        """Met à jour les images utilisées pour dessiner le plateau.
-Appelée à chaque fois qu'un nouveau plateau est généré.
-        """
+    # Le chemin d'accès aux images
+    chemin = 'ressources%s%s%s' % (sep, taille, sep)
 
-        self.taille_case = self.determine_taille_case()
-        self.chemin_images = 'ressources%s%s%s' % (sep, self.taille_case, sep)
+    # Toutes les images sont liées
+    cases_img = {
+        0:        tk.PhotoImage(master=racine, file='%scase_0.gif' % chemin),
+        1:        tk.PhotoImage(master=racine, file='%scase_1.gif' % chemin),
+        2:        tk.PhotoImage(master=racine, file='%scase_2.gif' % chemin),
+        3:        tk.PhotoImage(master=racine, file='%scase_3.gif' % chemin),
+        4:        tk.PhotoImage(master=racine, file='%scase_4.gif' % chemin),
+        5:        tk.PhotoImage(master=racine, file='%scase_5.gif' % chemin),
+        6:        tk.PhotoImage(master=racine, file='%scase_6.gif' % chemin),
+        7:        tk.PhotoImage(master=racine, file='%scase_7.gif' % chemin),
+        8:        tk.PhotoImage(master=racine, file='%scase_8.gif' % chemin),
+        BASE:     tk.PhotoImage(master=racine, file='%sbase.gif' % chemin),
+        DRAPEAU:  tk.PhotoImage(master=racine, file='%sdrapeau.gif' % chemin),
+        MINE:     tk.PhotoImage(master=racine, file='%smine.gif' % chemin),
+        PERDU:    tk.PhotoImage(master=racine, file='%sperdu.gif' % chemin)
+    }
 
-        self.base = tk.PhotoImage(file='%sbase.gif' % self.chemin_images)
-        self.drapeau = tk.PhotoImage(file='%sdrapeau.gif' % self.chemin_images)
-        self.mine = tk.PhotoImage(file='%smine.gif' % self.chemin_images)
-        self.mine_explose = tk.PhotoImage(file='%smine_explose.gif' \
-                                          % self.chemin_images)
 
-        self.cases_img = [
-                        tk.PhotoImage(file='%scase_0.gif' % self.chemin_images),
-                        tk.PhotoImage(file='%scase_1.gif' % self.chemin_images),
-                        tk.PhotoImage(file='%scase_2.gif' % self.chemin_images),
-                        tk.PhotoImage(file='%scase_3.gif' % self.chemin_images),
-                        tk.PhotoImage(file='%scase_4.gif' % self.chemin_images),
-                        tk.PhotoImage(file='%scase_5.gif' % self.chemin_images),
-                        tk.PhotoImage(file='%scase_6.gif' % self.chemin_images),
-                        tk.PhotoImage(file='%scase_7.gif' % self.chemin_images),
-                        tk.PhotoImage(file='%scase_8.gif' % self.chemin_images)
-                          ]
+# LES ÉVÈNEMENTS ##############################################################
 
-    def maj_max_mines(self, e):
-        """Met à jour le nombre maximum de mines sélectionnables à chaque \
-changement de la largeur ou de la hauteur (via les scales de réglages)."""
 
-        self.largeur = self.nouvelle_largeur.get()
-        self.hauteur = self.nouvelle_hauteur.get()
+def event_max_mines(event: tk.Event) -> (None):
+    """Adpate le maximum de l'échelle du nombre de mines aux changements sur \
+les échelles de largeur et de hauteur.
 
-        self.nombre_mines.destroy()
-        self.mines_scale(self.reglages)
+Modifie:
+ - sc_mines['to']       - int - le maximum de mines plaçables."""
 
-    def maj_case(self, c):
-        """Lors d'un clic gauche sur une case, celle-ci est révélée si elle \
+    global sc_mines, sc_largeur, sc_hauteur
+
+    sc_mines['to'] = sc_largeur.get() * sc_hauteur.get()
+
+
+def event_case(c: tk.Event) -> (None):
+    """Lors d'un clic gauche sur une case, celle-ci est révélée si elle \
 n'est pas un drapeau."""
 
-        # On récupère la case cliquée, ses coordonnées et la case du terrain
-        # correspondante
-        case = c.widget
+    global cases, cases_img
 
-        x = self.cases[case][0]
-        y = self.cases[case][1]
+    # On récupère la case cliquée, ses coordonnées et la case du terrain
+    # correspondante
+    case = c.widget
+    x, y = cases[case]
+    valeur_case = actions.terrain[y][x]
 
-        valeur_case = self.terrain.terrain[y][x]
+    # S'il y a un drapeau, on ne fait rien
+    if valeur_case == DRAPEAU:
+        return
+    # Si ce n'est pas un drapeau, alors on ajoute la case à la liste des
+    # cases du terrain vues et on affiche la case
+    else:
+        case['image'] = cases_img[valeur_case]
+        actions.cases_vues.append((x, y))
 
-        # S'il y a un drapeau, on ne fait rien
-        if valeur_case == DRAPEAU:
-            return
-        # Si ce n'est pas un drapeau, alors on ajoute la case à la liste des
-        # cases du terrain vues
-        # Si c'est une mine on affiche une mine (le fait d'avoir perdu n'est pas
-        # encore pris en compte)
-        elif valeur_case == MINE:
-            case['image'] = self.mine
-            self.terrain.pos_vues.append((x, y))
-            return
-        # Si ce n'est ni une mine ni un drapeau, on affiche la case chiffrée
-        # correspondante
-        else:
-            case['image'] = self.cases_img[valeur_case]
-            self.terrain.pos_vues.append((x, y))
-            return
 
-    def maj_drapeau(self, c):
-        """Place ou supprime un drapeau si il est possible d'en placer/\
-supprimer un."""
+def event_drapeau(c: tk.Event) -> (None):
+    """Place ou supprime un drapeau si il est possible d'en placer/supprimer \
+un."""
 
-        # On récupère la case cliquée, ses coordonnées et la case du terrain
-        # correspondante
-        case = c.widget
+    global cases, cases_img
 
-        x = self.cases[case][0]
-        y = self.cases[case][1]
+    # On récupère la case cliquée, ses coordonnées et la case du terrain
+    # correspondante
+    case = c.widget
+    x, y = cases[case]
+    valeur_case = actions.terrain[y][x]
 
-        valeur_case = self.terrain.terrain[y][x]
+    # S'il y a déjà un drapeau, on le supprime et on remplace par
+    # l'ancienne valeur
+    if valeur_case == DRAPEAU:
+        case['image'] = cases_img[BASE]
+        actions.terrain[y][x] = actions.terrain_complet[y][x]
+        return
 
-        # S'il y a déjà un drapeau, on le supprime et on remplace par l'ancienne
-        # valeur
-        if valeur_case == DRAPEAU:
-            case['image'] = self.base
-            self.terrain.terrain[y][x] = self.terrain.terrain_complet[y][x]
-            return
+    # S'il ni y'a pas de drapeau (vérifié au dessus) et que la case est encore
+    # cachée, on peut placer un drapeau
+    if not ((x, y) in actions.cases_vues):
+        case['image'] = cases_img[DRAPEAU]
+        actions.terrain[y][x] = DRAPEAU
 
-        # S'il ny'a pas de drapeau et que la case est encore cachée, on peut
-        # placer un drapeau
-        if not ((x, y) in self.terrain.pos_vues):
-            case['image'] = self.drapeau
-            self.terrain.terrain[y][x] = DRAPEAU
-            return
 
-    # ÉLÉMENTS DE L'INTERFACE ##################################################
+# LE PLATEAU DU JEU ###########################################################
 
-    def dessine_plateau(self):
-        """Dessine le plateau du jeu et y place les cases avec l'image de base."""
 
-        # On supprime self.plateau s'il existe déjà afin de le 'nettoyer'
-        try: self.plateau.destroy()
-        except: pass
+def label_case(racine: tk.Canvas, x: int, y: int) -> (tk.Label):
+    """Dessine une case de base non-découverte.
 
-        self.largeur = self.nouvelle_largeur.get()
-        self.hauteur = self.nouvelle_hauteur.get()
+Arguments:
+ - racine       - tk.Canvas - la fenêtre/sous-fenêtre où dessiner la case,
+ - x            - int - la position en x de la case dans 'racine',
+ - y            - int - la position en y de la case dans 'racine'.
 
-        self.maj_images()
-        self.cases.clear()
+Retourne:
+ - case         - tk.Label - la référence vers la case créée."""
 
-        # Initialise le plateau du jeu
-        plateau = tk.Canvas(self.interface,
-                            width=self.largeur * self.taille_case,
-                            height=self.hauteur * self.taille_case)
+    global cases_img
 
-        plateau.grid(column=0, row=0, padx=10, pady=10)
+    # Initialise la case
+    case = tk.Label(racine,
+                    borderwidth=1,
+                    relief='sunken',
+                    image=cases_img[BASE])
 
-        # Dessine les cases du jeu
-        for y in range(self.hauteur):
-            for x in range(self.largeur):
-                # Dessine la case de coordonnées (x, y)
-                case = self.dessine_case(plateau, x, y)
-                # Associe la case à ses coordonnées (x, y)
-                self.cases[case[0]] = case[1]
+    # Lie la case à ses évènements
+    case.bind('<Button-1>', event_case)
+    case.bind('<Button-2>', event_drapeau)
 
-                del case
+    # Place la case
+    case.grid(column=x, row=y)
 
-        # Génère un terrain adapté à la grille choisie
-        self.terrain = action.nouveau_terrain(self.largeur,
-                                              self.hauteur,
-                                              self.nombre_mines.get())
+    return case
 
-        return plateau
 
-    def dessine_case(self, racine, x, y):
-        """Dessine une case simple."""
+def canvas_plateau(racine: tk.Tk,
+                   largeur: int, hauteur: int,
+                   col=0, lig=0) -> (None):
+    """Dessine le plateau de base du jeu, avant que l'utilisateur commence à \
+jouer.
 
-        case = tk.Label(racine, borderwidth=1, relief='sunken',image=self.base)
+Argument:
+ - racine       - tk.Tk - la fenêtre dans laquelle dessiner le plateau,
+ - largeur      - int - largeur en case du terrain,
+ - hauteur      - int - hauteur en case du terrain,
+ - col=0        - int - la colonne de la racine où sera placé le plateau,
+ - lig=0        - int - la ligne de la racine où sera placé le plateau.
 
-        # Lie les cases aux actions possible
-        case.bind('<Button-1>', self.maj_case)
-        case.bind('<Button-2>', self.maj_drapeau)
+Retourne:
+ - plateau      - tk.Canvas - le plateau du jeu."""
 
-        case.grid(column=x, row=y)
+    global cv_plateau, cases_taille, cases
 
-        return case, (x, y)
+    # On nettoie le plateau précédent
+    cv_plateau.destroy()
 
-    def mines_scale(self, racine):
-        """Place l'échelle pour choisir le nombre de mines dans la partie."""
+    # On met à jour les images
+    maj_taille_cases(largeur, hauteur)
+    maj_images(cv_plateau, cases_taille)
 
-        # Pour choisir le nombre de mines
-        self.nombre_mines = tk.Scale(racine)
-        self.nombre_mines['from'] = 0
-        self.nombre_mines['to'] = self.hauteur * self.largeur
-        self.nombre_mines['orient'] = 'horizontal'
-        self.nombre_mines['label'] = 'Mines:'
-        self.nombre_mines.grid(column=0, row=2, pady=5)
+    # Initialise le nouveau plateau
+    cv_plateau = tk.Canvas(racine,
+                           width=largeur * cases_taille,
+                           height=hauteur * cases_taille)
+    # Place le plateau
+    cv_plateau.grid(column=col, row=lig, padx=10, pady=10)
 
-    def taille_scale(self, racine):
-        """Place les échelles pour choisir la largeur et la hauteur du plateau \
-en nombre de cases. Elles sont automatiquement liées à self.maj_max_mines() \
-pour mettre à jour l'échelle du choix du nombre de mines à chaque changement."""
+    # Dessine les cases du jeu
+    for y in range(hauteur):
+        for x in range(largeur):
+            # Récupère la référence en dessinant la case
+            case = label_case(cv_plateau, x, y)
+            # Associe la référence de la case à ses coordonnées (x, y)
+            cases[case] = (x, y)
 
-        # Pour choisir le nombre de case en largeur
-        self.choix_largeur = tk.Scale(racine)
-        self.choix_largeur['from'] = MIN_CASES
-        self.choix_largeur['to'] = MAX_CASES
-        self.choix_largeur['orient'] = 'horizontal'
-        self.choix_largeur['label'] = 'Largeur:'
-        self.choix_largeur['variable'] = self.nouvelle_largeur
-        self.choix_largeur.bind('<ButtonRelease>', self.maj_max_mines)
-        self.choix_largeur.grid(column=0, row=0, pady=5)
 
-        # Pour choisir le nombre de case en hauteur
-        self.choix_hauteur = tk.Scale(racine)
-        self.choix_hauteur['from'] = MIN_CASES
-        self.choix_hauteur['to'] = MAX_CASES
-        self.choix_hauteur['orient'] = 'horizontal'
-        self.choix_hauteur['label'] = 'Hauteur:'
-        self.choix_hauteur['variable'] = self.nouvelle_hauteur
-        self.choix_hauteur.bind('<ButtonRelease>', self.maj_max_mines)
-        self.choix_hauteur.grid(column=0, row=1, pady=5)
+#  LES RÉGLAGES DU JEU ########################################################
 
-    def rejouer_button(self, racine):
-        """Place le bouton permettant de relancer une partie."""
 
-        # Le bouton pour rejouer
-        nouvelle_partie = tk.Button(racine)
-        nouvelle_partie['text'] = 'Nouvelle partie'
-        nouvelle_partie['command'] = self.dessine_plateau
-        nouvelle_partie.grid(column=0, row=3, pady=5)
+def scale_largeur() -> (None):
+    """L'échelle pour choisir la largeur."""
 
-    def reglages_frame(self):
-        """Place le Frame qui contient l'ensemble des outils de réglages du \
-jeu."""
+    global sc_largeur
 
-        # Defini le tk.Frame() qui va contenir les outils de réglages du jeu
-        frame = tk.Frame(self.interface)
+    # Pour choisir le nombre de case en largeur
+    sc_largeur['from'] = MIN_CASES
+    sc_largeur['to'] = MAX_CASES
+    sc_largeur['orient'] = 'horizontal'
+    sc_largeur['label'] = 'Largeur:'
 
-        # Les échelles pour les réglages
-        self.taille_scale(frame)
-        self.mines_scale(frame)
+    sc_largeur.bind('<ButtonRelease>', event_max_mines)
 
-        # Le bouton pour rejouer
-        self.rejouer_button(frame)
+    sc_largeur.grid(column=0, row=0, pady=5)
 
-        frame.grid(column=1, row=0)
 
-        return frame
+def scale_hauteur() -> (None):
+    """L'échelle pour choisir la hauteur"""
 
-    # AUTRES MÉTHODES ##########################################################
+    global sc_hauteur
 
-    def determine_taille_case(self):
-        """Adapte la taille des images aux nombres de cases du plateau.
+    # Pour choisir le nombre de case en hauteur
+    sc_hauteur['from'] = MIN_CASES
+    sc_hauteur['to'] = MAX_CASES
+    sc_hauteur['orient'] = 'horizontal'
+    sc_hauteur['label'] = 'Hauteur'
 
-Retourne un int: 15, 30, 45 ou 60 (taille des images utilisées, en pixel)."""
+    sc_hauteur.bind('<ButtonRelease>', event_max_mines)
 
-        if 10 <= max(self.hauteur, self.largeur) < 15: return 45
+    sc_hauteur.grid(column=0, row=1, pady=5)
 
-        if 15 <= max(self.hauteur, self.largeur) < 20: return 30
 
-        if 20 <= max(self.hauteur, self.largeur): return 15
+def scale_mines() -> (None):
+    """L'échelle pour choisir le nombre de mines."""
 
-        return 60
+    global sc_mines, sc_largeur, sc_hauteur
 
-# Valeurs de test uniquement
-if __name__ == '__main__':
+    sc_mines['from'] = 0
+    sc_mines['to'] = sc_largeur.get() * sc_hauteur.get()
+    sc_mines['orient'] = 'horizontal'
+    sc_mines['label'] = 'Mines:'
 
-    Interface(NOM_APP, LARGEUR_MIN, HAUTEUR_MIN, 5, 5)
+    sc_mines.grid(column=0, row=2, pady=5)
+
+
+def button_rejouer() -> (None):
+    """Le bouton permettant de relancer une partie."""
+
+    # Le bouton pour rejouer
+    but_rejouer['text'] = 'Nouvelle partie'
+    but_rejouer['command'] = actions.command_rejouer
+
+    but_rejouer.grid(column=0, row=3, pady=5)
+
+
+def frame_reglages(col=1, lig=0) -> (None):
+    """Le panneau des réglages de base du jeu, pour que l'utilisateur puisse \
+personnaliser sa partie.
+
+Arguments:
+ - col=0        - int - la colonne de la racine où sera placé le panneau,
+ - lig=0        - int - la ligne de la racine où sera placé le panneau."""
+
+    # Les échelles pour les réglages
+    scale_largeur()
+    scale_hauteur()
+    scale_mines()
+
+    # Le bouton pour rejouer
+    button_rejouer()
+
+    fr_reglages.grid(column=col, row=lig)
+
+
+# L'INTERFACE GÉNÉRALE ########################################################
+
+
+def interface(titre: str, largeur_min: int, hauteur_min: int) -> (None):
+    """Lance l'interface du jeu."""
+
+    global fenetre
+
+    # Initialise quelques bases de la fenêtre
+    fenetre.minsize(largeur_min, hauteur_min)
+    fenetre.title(titre)
+
+    # Initialise le panneau de réglages
+    frame_reglages()
+
+    # Initialise le plateau de jeu et un terrain vide en même temps
+    actions.command_rejouer()
+
+    # Lance l'interface
+    fenetre.mainloop()
