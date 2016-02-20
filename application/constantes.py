@@ -4,7 +4,7 @@
 
 Initialise les constantes représentants les différents états possibles du jeu:
  - MINE
- - MINE_EXPLOSE
+ - PERDU
  - DRAPEAU
  - CASE
 
@@ -12,6 +12,7 @@ Initialise les constantes servant à l'interface du jeu:
  - NOM_APP
  - LARGEUR_MIN
  - HAUTEUR_MIN
+ - BASE
 
 Initialise les constantes servant aux réglages du jeu
  - MIN_CASES
@@ -25,12 +26,12 @@ Initialise les constantes servant aux réglages du jeu
 MINE = 9
 
 # Représente une mine venant d'exploser (> partie perdue)
-MINE_EXPLOSE = 10
+PERDU = 10
 
 # Représente un drapeau (ajoutable/supprimable par le joueur)
 DRAPEAU = -1
 
-# Représente une case de base vide
+# Représente une case vide
 CASE = 0
 
 
@@ -42,10 +43,13 @@ CASE = 0
 NOM_APP = 'Démineur ISN'
 
 # La taille minimum de la fenêtre de jeu en largeur, en pixel
-LARGEUR_MIN = 300
+LARGEUR_MIN = 600
 
 # La taille minimum de la fenêtre de jeu en hauteur, en pixel
-HAUTEUR_MIN = 150
+HAUTEUR_MIN = 400
+
+# Représente une case inconnue (sert uniquement à initialiser un plateau)
+BASE = -2
 
 ###########################
 # CONSTANTES DES RÉGLAGES #
