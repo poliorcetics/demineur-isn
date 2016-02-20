@@ -274,7 +274,7 @@ cases_img = {
     PERDU:    tk.PhotoImage(file='%sperdu.gif' % chemin)
 }
 ```
-ne fonctionnera jamais car les images sont supprimées par le `Garbage Collector`, ne détectant pas de parents, décide de les supprimer malgré le fait qu'elles soient référencées dans un dictionnaire. La correction est assez simple, il suffit de rajouter un parent:
+ne fonctionnera jamais car les images sont supprimées par le `Garbage Collector` (il ne détecte pas de parent), malgré le fait qu'elles soient référencées dans un dictionnaire. La correction est assez simple, il suffit de rajouter un parent:
 ```python
 cases_img = {
     0:        tk.PhotoImage(master=racine, file='%scase_0.gif' % chemin),
