@@ -14,15 +14,17 @@ VARIABLES GLOBALES
  - sc_mines         - tk.Scale - l'échelle du choix du nombre de mines,
  - but_rejouer      - tk.Button - le bouton pour rejouer,
  - cases            - dict(tk.Label: (int, int)) - les cases et leur position,
+ - cases_pos        - dict((int, int): tk.Label) - les positions et leur case,
  - cases_taille     - int - la taille en pixel des côtés des cases,
  - cases_img        - dict(int: tk.PhotoImage) - les type de case et les \
 images correspondantes.
 
 FONCTIONS
 
-    MISES À JOUR DE VARIABLES
+    MISES À JOUR
  - maj_taille_cases(largeur: int, hauteur: int)                  -> (bool),
  - maj_images(racine: tk.Canvas, taille: int)                    -> (None),
+ - maj_revele_case(x: int, y: int)                               -> (None),
 
     ÉVÈNEMENTS
  - event_max_mines(event: tk.Event)                              -> (None),
@@ -74,6 +76,7 @@ but_rejouer = tk.Button(fr_reglages)
 
 # Les cases du plateau
 cases = {}
+cases_pos = {}
 
 # La taille des cases du plateau
 cases_taille = 0
@@ -82,7 +85,7 @@ cases_taille = 0
 cases_img = {}
 
 
-# LES MISES À JOUR DE VARIABLES ###############################################
+# LES MISES À JOUR ############################################################
 
 
 def maj_taille_cases(largeur: int, hauteur: int) -> (bool):
@@ -158,6 +161,78 @@ Modifie:
     }
 
 
+def maj_revele_case(x: int, y: int) -> (None):
+    """Révèle la case de coordonnées (x, y) plus les cases environnantes si \
+la case est une case sans mines dans son entourage direct (de valeur 0).
+
+Arguments:
+ - x                - int - la position en x de la case,
+ - y                - int - la position en y de la case.
+
+Note:
+ Ceci est une fonction récursive, sur un grand plateau avec peu de mines elle \
+risque de prendre un peu de temps."""
+
+    global cases, cases_pos, cases_img
+
+    # On récupère la valeur de la case et on continue dans la fonction
+    # uniquement si la case n'a pas déjà été révélé
+    try:
+        valeur_case = actions.terrain[y][x]
+    except IndexError:
+        return
+    finally:
+        if (x, y) in actions.cases_vues:
+            return
+
+    # On récupère la case sous sa forme de tk.Label
+    case = cases_pos[(x, y)]
+
+    # Si la case est un chiffre basique, on l'afiche
+    if 0 < valeur_case < 9:
+        actions.cases_vues.append((x, y))
+        case['image'] = cases_img[valeur_case]
+        return
+    # Si la case vaut zéro, on révèle l'entourage
+    elif valeur_case == 0:
+        actions.cases_vues.append((x, y))
+        case['image'] = cases_img[valeur_case]
+
+        # Pour éviter les indices négatifs et les problèmes qui vont avec, on
+        # provoque une IndexError dans les appels suivants
+        y_moins = y - 1 if y - 1 >= 0 else len(actions.terrain)
+        x_moins = x - 1 if x - 1 >= 0 else len(actions.terrain[0])
+
+        # On teste les cases autour, pour les révéler ou propager la révélation
+        # si elles sont de valeur 0
+        # Haut, à gauche
+        maj_revele_case(x_moins, y_moins)
+
+        # Haut, au milieu
+        maj_revele_case(x, y_moins)
+
+        # Haut, à droite
+        maj_revele_case(x+1, y_moins)
+
+        # Milieu, à droite
+        maj_revele_case(x+1, y)
+
+        # Bas, à droite
+        maj_revele_case(x+1, y+1)
+
+        # Bas, au milieu
+        maj_revele_case(x, y+1)
+
+        # Bas, à gauche
+        maj_revele_case(x_moins, y+1)
+
+        # Milieu, à gauche
+        maj_revele_case(x_moins, y)
+    # Si la case n'était pas chiffrée (une mine donc), on la révèle simplement
+    else:
+        actions.cases_vues.append((x, y))
+        case['image'] = cases_img[valeur_case]
+
 # LES ÉVÈNEMENTS ##############################################################
 
 
@@ -175,24 +250,22 @@ Modifie:
 
 def event_case(c: tk.Event) -> (None):
     """Lors d'un clic gauche sur une case, celle-ci est révélée si elle \
-n'est pas un drapeau."""
+n'est pas un drapeau. Si la valeur de la case est 0, toutes les cases autour \
+seront révélées elles-aussi."""
 
     global cases, cases_img
 
-    # On récupère la case cliquée, ses coordonnées et la case du terrain
-    # correspondante
-    case = c.widget
-    x, y = cases[case]
-    valeur_case = actions.terrain[y][x]
+    # On récupère les coordonnées
+    x, y = cases[c.widget]
 
     # S'il y a un drapeau, on ne fait rien
-    if valeur_case == DRAPEAU:
+    if actions.terrain[y][x] == DRAPEAU:
         return
     # Si ce n'est pas un drapeau, alors on ajoute la case à la liste des
     # cases du terrain vues et on affiche la case
     else:
-        case['image'] = cases_img[valeur_case]
-        actions.cases_vues.append((x, y))
+        # Gère la propagation de la révélation si la case vaut 0
+        maj_revele_case(x, y)
 
 
 def event_drapeau(c: tk.Event) -> (None):
@@ -269,7 +342,7 @@ Argument:
 Retourne:
  - plateau      - tk.Canvas - le plateau du jeu."""
 
-    global cv_plateau, cases_taille, cases
+    global cv_plateau, cases_taille, cases, cases_pos
 
     # On nettoie le plateau précédent
     cv_plateau.destroy()
@@ -292,6 +365,8 @@ Retourne:
             case = label_case(cv_plateau, x, y)
             # Associe la référence de la case à ses coordonnées (x, y)
             cases[case] = (x, y)
+            # Associe les coordonnées (x, y) à la référence de la case
+            cases_pos[(x, y)] = case
 
 
 #  LES RÉGLAGES DU JEU ########################################################
