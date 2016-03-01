@@ -298,3 +298,90 @@ cases_img = {
 Tout est de nouveau fonctionnel mais cette fois sans `POO`. Pour obtenir la même fenêtre avec les mêmes options qu'auparavant (placement/suppression de drapeau, découverte des cases, etc...) il faut lancer le fichier `actions_joueur.py` et non plus le fichier `interface.py`.
 
 _______________________________________________________________________________
+
+## 01/03/2016
+
+#### 1) Propagation de la révélation des cases
+
+Codage de la fonction suivante:
+```python
+def maj_revele_case(x: int, y: int) -> (None):
+    """Révèle la case de coordonnées (x, y) plus les cases environnantes si \
+la case est une case sans mines dans son entourage direct (de valeur 0).
+
+Arguments:
+ - x                - int - la position en x de la case,
+ - y                - int - la position en y de la case.
+
+Note:
+ Ceci est une fonction récursive, sur un grand plateau avec peu de mines elle \
+risque de prendre un peu de temps."""
+
+    global cases, cases_pos, cases_img
+
+    # On récupère la valeur de la case et on continue dans la fonction
+    # uniquement si la case n'a pas déjà été révélé
+    try:
+        valeur_case = actions.terrain[y][x]
+    except IndexError:
+        return
+    finally:
+        if (x, y) in actions.cases_vues:
+            return
+
+    # On récupère la case sous sa forme de tk.Label
+    case = cases_pos[(x, y)]
+
+    # Si la case est un chiffre basique, on l'afiche
+    if 0 < valeur_case < 9:
+        actions.cases_vues.append((x, y))
+        case['image'] = cases_img[valeur_case]
+        return
+    # Si la case vaut zéro, on révèle l'entourage
+    elif valeur_case == 0:
+        actions.cases_vues.append((x, y))
+        case['image'] = cases_img[valeur_case]
+
+        # Pour éviter les indices négatifs et les problèmes qui vont avec, on
+        # provoque une IndexError dans les appels suivants
+        y_moins = y - 1 if y - 1 >= 0 else len(actions.terrain)
+        x_moins = x - 1 if x - 1 >= 0 else len(actions.terrain[0])
+
+        # Haut, à gauche
+        maj_revele_case(x_moins, y_moins)
+
+        # Haut, au milieu
+        maj_revele_case(x, y_moins)
+
+        # Haut, à droite
+        maj_revele_case(x+1, y_moins)
+
+        # Milieu, à droite
+        maj_revele_case(x+1, y)
+
+        # Bas, à droite
+        maj_revele_case(x+1, y+1)
+
+        # Bas, au milieu
+        maj_revele_case(x, y+1)
+
+        # Bas, à gauche
+        maj_revele_case(x_moins, y+1)
+
+        # Milieu, à gauche
+        maj_revele_case(x_moins, y)
+    # Si la case n'était pas chiffrée (une mine donc), on la révèle simplement
+    else:
+        actions.cases_vues.append((x, y))
+        case['image'] = cases_img[valeur_case]
+```
+Cette fonction permet de propager la révélation des cases si nécessaire. Elle fonctionne récursivement.
+
+**Problèmes rencontrés**:
+
+J'ai rencontré deux problèmes principaux lors du codage de cette fonction.
+
+ 1. **Problème de référencement des cases**: La création de la variable `cases_pos` a été imposée car la méthode en sens inverse posait un problème lors de la récursion pour le référencement des cases et donc les modifications d'images nécessaires.
+ 2. **Problème de récursion**: La première version impliquait un grand nombre de boucles inutiles et posait son `return` trop tard, amenant une erreur de récursion trop importante car elle ne vérifiait pas assez tôt si la case avait été vue auparavant, causant une boucle infinie en repassant sans arrêt sur les mêmes cases.
+
+ L'implémentation de cette fonction a permis une grande simplification de la fonction `event_case(c: tk.Event) -> (None)` il suffit maintenant d'appeler la fonction `maj_revele_case(x: int, y: int) -> (None)` si la case n'est pas un drapeau pour gérer tout les cas actuels.

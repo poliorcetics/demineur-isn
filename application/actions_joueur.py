@@ -18,7 +18,6 @@ FONCTIONS
 
 # Pour faire une sauvegarde sans références problématiques
 from copy import deepcopy
-
 from constantes import *
 import terrain as jeu
 import interface as iu
