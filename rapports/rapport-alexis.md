@@ -385,3 +385,20 @@ J'ai rencontré deux problèmes principaux lors du codage de cette fonction.
  2. **Problème de récursion**: La première version impliquait un grand nombre de boucles inutiles et posait son `return` trop tard, amenant une erreur de récursion trop importante car elle ne vérifiait pas assez tôt si la case avait été vue auparavant, causant une boucle infinie en repassant sans arrêt sur les mêmes cases.
 
  L'implémentation de cette fonction a permis une grande simplification de la fonction `event_case(c: tk.Event) -> (None)` il suffit maintenant d'appeler la fonction `maj_revele_case(x: int, y: int) -> (None)` si la case n'est pas un drapeau pour gérer tout les cas actuels.
+
+_______________________________________________________________________________
+
+## 10/03/2016
+
+##### 1) Gestion des différents clics selon les OS.
+
+Nous avons trouvé que sous Windows, le clic-droit semble être `<Button-3` tandis que sous OS X (et probablement tous les systèmes Unix), il s'agit de `<Button-2>`. Nous avons donc ajouté une gestion du clic-droit en fonction de l'OS dans le fichier `interface.py`, dans la fonction générant une case (`label_case(racine: tk.Canvas, x: int, y: int) -> (tk.Label)`):
+
+```python
+# Pour Mac/Linux/Autres unix
+if name == 'posix':
+    case.bind('<Button-2>', event_drapeau)
+# Pour Windows
+else:
+    case.bind('<Button-3>', event_drapeau)
+```
