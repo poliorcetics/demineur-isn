@@ -49,7 +49,7 @@ FONCTIONS
 """
 
 # Pour gérer l'accès aux ressources sur Windows/Unix
-from os import sep
+from os import sep, name
 # Les fonctions pour l'interface graphique
 import tkinter as tk
 # Les constantes représentants les éléments du jeu
@@ -283,11 +283,14 @@ un."""
     # S'il y a déjà un drapeau, on le supprime et on remplace par
     # l'ancienne valeur
     if valeur_case == DRAPEAU:
+        # On remet l'image de base
         case['image'] = cases_img[BASE]
         actions.terrain[y][x] = actions.terrain_complet[y][x]
+        # On 'return' pour éviter de faire le test suivant si la case était
+        # un drapeau
         return
 
-    # S'il ni y'a pas de drapeau (vérifié au dessus) et que la case est encore
+    # S'il n'y a pas de drapeau (vérifié au dessus) et que la case est encore
     # cachée, on peut placer un drapeau
     if not ((x, y) in actions.cases_vues):
         case['image'] = cases_img[DRAPEAU]
@@ -318,8 +321,12 @@ Retourne:
 
     # Lie la case à ses évènements
     case.bind('<Button-1>', event_case)
-    case.bind('<Button-2>', event_drapeau)
-
+    # Pour Mac/Linux/Autres unix
+    if name == 'posix':
+        case.bind('<Button-2>', event_drapeau)
+    # Pour Windows
+    else:
+        case.bind('<Button-3>', event_drapeau)
     # Place la case
     case.grid(column=x, row=y)
 
@@ -413,6 +420,10 @@ def scale_mines() -> (None):
     sc_mines['to'] = sc_largeur.get() * sc_hauteur.get()
     sc_mines['orient'] = 'horizontal'
     sc_mines['label'] = 'Mines:'
+
+    # Place une valeur de base pour le nombre de mines
+    # La première partie est donc générée avec MINES_DEPART mines sur 5x5
+    sc_mines.set(MINES_DEPART)
 
     sc_mines.grid(column=0, row=2, pady=5)
 

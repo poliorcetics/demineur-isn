@@ -17,6 +17,7 @@ Initialise les constantes servant à l'interface du jeu:
 Initialise les constantes servant aux réglages du jeu
  - MIN_CASES
  - MAX_CASES
+ - MINES_DEPART
 """
 #####################
 # CONSTANTES DU JEU #
@@ -60,3 +61,6 @@ MIN_CASES = 5
 
 # Nombres maximum de cases (largeur comme hauteur)
 MAX_CASES = 30
+
+# Nombre de mines lors de la première partie générée (au lancement)
+MINES_DEPART = 5
