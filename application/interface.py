@@ -42,7 +42,7 @@ FONCTIONS
  - scale_hauteur()                                               -> (None),
  - scale_mines()                                                 -> (None),
  - button_rejouer()                                              -> (None),
- - frame_reglages(col=0, lig=0)                                  -> (None),
+ - frame_reglages(col=1, lig=0)                                  -> (None),
 
     INTERFACE GÉNÉRALE
  - interface(titre: str, largeur_min: int, hauteur_min: int)     -> (None).

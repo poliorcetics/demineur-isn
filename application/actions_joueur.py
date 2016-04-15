@@ -13,7 +13,7 @@ VARIABLES GLOBALES
 FONCTIONS
 
     COMMANDES
-- rejouer(largeur, hauteur, nombre_mines)                           -> (None).
+- command_rejouer()     -> (None).
 """
 
 # Pour faire une sauvegarde sans références problématiques
