@@ -56,6 +56,8 @@ import tkinter as tk
 from constantes import *
 # Les actions de l'utilisateur
 import actions_joueur as actions
+# Le chronomètre pour mesurer la durée d'une partie
+from chronometre import Chrono
 
 # LES VARIABLES GLOBALES ######################################################
 
@@ -65,6 +67,9 @@ fenetre = tk.Tk()
 # Les composants de la fenêtre principle
 fr_reglages = tk.Frame(fenetre)
 cv_plateau = tk.Canvas(fenetre)
+
+# Le chronomètre
+lb_chrono = Chrono(fr_reglages)
 
 # Les échelles pour les réglages
 sc_largeur = tk.Scale(fr_reglages)
@@ -379,6 +384,12 @@ Retourne:
 #  LES RÉGLAGES DU JEU ########################################################
 
 
+def label_chrono() -> (None):
+    """Le chronmètre pour mesurer la durée d'une partie."""
+
+    lb_chrono.grid(column=0, row=0, pady=5)
+
+
 def scale_largeur() -> (None):
     """L'échelle pour choisir la largeur."""
 
@@ -392,7 +403,7 @@ def scale_largeur() -> (None):
 
     sc_largeur.bind('<ButtonRelease>', event_max_mines)
 
-    sc_largeur.grid(column=0, row=0, pady=5)
+    sc_largeur.grid(column=0, row=1, pady=5)
 
 
 def scale_hauteur() -> (None):
@@ -408,7 +419,7 @@ def scale_hauteur() -> (None):
 
     sc_hauteur.bind('<ButtonRelease>', event_max_mines)
 
-    sc_hauteur.grid(column=0, row=1, pady=5)
+    sc_hauteur.grid(column=0, row=2, pady=5)
 
 
 def scale_mines() -> (None):
@@ -425,7 +436,7 @@ def scale_mines() -> (None):
     # La première partie est donc générée avec MINES_DEPART mines sur 5x5
     sc_mines.set(MINES_DEPART)
 
-    sc_mines.grid(column=0, row=2, pady=5)
+    sc_mines.grid(column=0, row=3, pady=5)
 
 
 def button_rejouer() -> (None):
@@ -435,7 +446,7 @@ def button_rejouer() -> (None):
     but_rejouer['text'] = 'Nouvelle partie'
     but_rejouer['command'] = actions.command_rejouer
 
-    but_rejouer.grid(column=0, row=3, pady=5)
+    but_rejouer.grid(column=0, row=4, pady=5)
 
 
 def frame_reglages(col=1, lig=0) -> (None):
@@ -443,8 +454,11 @@ def frame_reglages(col=1, lig=0) -> (None):
 personnaliser sa partie.
 
 Arguments:
- - col=0        - int - la colonne de la racine où sera placé le panneau,
+ - col=1        - int - la colonne de la racine où sera placé le panneau,
  - lig=0        - int - la ligne de la racine où sera placé le panneau."""
+
+    # Le chronomètre
+    label_chrono()
 
     # Les échelles pour les réglages
     scale_largeur()

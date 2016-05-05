@@ -58,6 +58,9 @@ Commande pour le bouton 'but_rejouer'."""
     # On génère le plateau
     iu.canvas_plateau(iu.fenetre, largeur, hauteur)
 
+    iu.lb_chrono.stop_chrono()
+    iu.lb_chrono.lance_chrono()
+
 
 # Exemples en console, toutes les valeurs ici sont des valeurs de test
 if __name__ == "__main__":

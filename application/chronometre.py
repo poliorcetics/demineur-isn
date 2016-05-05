@@ -39,6 +39,8 @@ Arguments:
         self.temps_ecoule = 0
         # Détermine l'état du chronomètre
         self.chrono_actif = False
+        # L'ID utilisée pour le self.after()
+        self._after = None
         # Initialise l'affichage du temps écoulé (possible car on dérive d'un
         # tk.Label)
         self.__setitem__('text', '0h 0min 0s')
@@ -54,11 +56,15 @@ actif."""
             # Ajout d'une seconde
             self.temps_ecoule += 1
             # Attente d'une seconde avant l'appel récursif
-            self.after(1000, self.tourne_chrono)
+            self._after = self.after(1000, self.tourne_chrono)
 
     def stop_chrono(self) -> (None):
         """Stoppe le chrono s'il est lancé, sinon ne fait rien."""
         self.chrono_actif = False
+        # On utilise l'ID du self.after pour l'arr^ter au besoin
+        if self._after is not None:
+            self.after_cancel(self._after)
+            self._after = None
 
     def lance_chrono(self) -> (None):
         """Lance le chrono s'il n'est pas déjà actif, sinon ne fait rien."""
