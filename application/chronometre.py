@@ -6,13 +6,15 @@ CLASSE
 
  - class Chrono(self, racine **kwargs)      <- (tk.Label)
 
+
 FONCTION
 
- - formate_temps(temps)                     -> (str)
+ - formate_temps(temps: int)                -> (str)
 """
 
 import time as t
 import tkinter as tk
+
 
 class Chrono(tk.Label):
     """Dérive de tk.Label pour former un chronomètre qui une fois lancé,
@@ -39,7 +41,7 @@ Arguments:
         self.chrono_actif = False
         # Initialise l'affichage du temps écoulé (possible car on dérive d'un
         # tk.Label)
-        self.__setitem__('text', '00:00:00')
+        self.__setitem__('text', '0h 0min 0s')
 
     def tourne_chrono(self) -> (None):
         """Fonction récursive (via appel à after) faisant tourner le
@@ -70,15 +72,15 @@ actif."""
             self.tourne_chrono()
 
 
-def formate_temps(temps) -> (str):
+def formate_temps(temps: int) -> (str):
     """Prends un temps en seconde en entrée, le retourne sous la forme
 heures:minutes:secondes."""
 
-    # Récupère le temps en seconde
-    temps = t.strptime(str(temps), '%S')
+    heures = temps // 3600
+    minutes = (temps - heures * 3600) // 60
+    secondes = temps - (heures * 3600 + minutes * 60)
 
-    # Retourne le temps sous la forme heures:minutes:secondes
-    return t.strftime('%H:%M:%S', temps)
+    return "%sh %smin %ss" % (heures, minutes, secondes)
 
 
 # Code exécuté lors de tests
