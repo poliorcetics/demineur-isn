@@ -42,22 +42,28 @@ FONCTIONS
  - scale_hauteur()                                               -> (None),
  - scale_mines()                                                 -> (None),
  - button_rejouer()                                              -> (None),
- - frame_reglages(col=0, lig=0)                                  -> (None),
+ - frame_reglages(col=1, lig=0)                                  -> (None),
 
     INTERFACE GÉNÉRALE
  - interface(titre: str, largeur_min: int, hauteur_min: int)     -> (None).
 """
 
 # Pour gérer l'accès aux ressources sur Windows/Unix
-from os import sep
+from os import sep, name
 # Les fonctions pour l'interface graphique
 import tkinter as tk
 # Les constantes représentants les éléments du jeu
 from constantes import *
 # Les actions de l'utilisateur
 import actions_joueur as actions
+# Le chronomètre pour mesurer la durée d'une partie
+from chronometre import Chrono
+# La vérification permettant de savoir si l'on a fini la partie ou non
+import actions_ordi as ordi
+
 
 # LES VARIABLES GLOBALES ######################################################
+
 
 # La fenêtre principale
 fenetre = tk.Tk()
@@ -65,6 +71,9 @@ fenetre = tk.Tk()
 # Les composants de la fenêtre principle
 fr_reglages = tk.Frame(fenetre)
 cv_plateau = tk.Canvas(fenetre)
+
+# Le chronomètre
+lb_chrono = Chrono(fr_reglages)
 
 # Les échelles pour les réglages
 sc_largeur = tk.Scale(fr_reglages)
@@ -188,11 +197,10 @@ risque de prendre un peu de temps."""
     # On récupère la case sous sa forme de tk.Label
     case = cases_pos[(x, y)]
 
-    # Si la case est un chiffre basique, on l'afiche
+    # Si la case est un chiffre basique, on l'affiche
     if 0 < valeur_case < 9:
         actions.cases_vues.append((x, y))
         case['image'] = cases_img[valeur_case]
-        return
     # Si la case vaut zéro, on révèle l'entourage
     elif valeur_case == 0:
         actions.cases_vues.append((x, y))
@@ -231,7 +239,15 @@ risque de prendre un peu de temps."""
     # Si la case n'était pas chiffrée (une mine donc), on la révèle simplement
     else:
         actions.cases_vues.append((x, y))
-        case['image'] = cases_img[valeur_case]
+        # Affiche la mine de couleur rouge si c'est celle qui fait perdre la
+        # partie, sinon la mine noire
+        if not ordi.fini:
+            case['image'] = cases_img[PERDU]
+        else:
+            case['image'] = cases_img[MINE]
+
+    ordi.nb_cases_vues += 1
+    ordi.verif_etat_partie(valeur_case)
 
 # LES ÉVÈNEMENTS ##############################################################
 
@@ -283,11 +299,14 @@ un."""
     # S'il y a déjà un drapeau, on le supprime et on remplace par
     # l'ancienne valeur
     if valeur_case == DRAPEAU:
+        # On remet l'image de base
         case['image'] = cases_img[BASE]
         actions.terrain[y][x] = actions.terrain_complet[y][x]
+        # On 'return' pour éviter de faire le test suivant si la case était
+        # un drapeau
         return
 
-    # S'il ni y'a pas de drapeau (vérifié au dessus) et que la case est encore
+    # S'il n'y a pas de drapeau (vérifié au dessus) et que la case est encore
     # cachée, on peut placer un drapeau
     if not ((x, y) in actions.cases_vues):
         case['image'] = cases_img[DRAPEAU]
@@ -318,8 +337,12 @@ Retourne:
 
     # Lie la case à ses évènements
     case.bind('<Button-1>', event_case)
-    case.bind('<Button-2>', event_drapeau)
-
+    # Pour Mac/Linux/Autres unix
+    if name == 'posix':
+        case.bind('<Button-2>', event_drapeau)
+    # Pour Windows
+    else:
+        case.bind('<Button-3>', event_drapeau)
     # Place la case
     case.grid(column=x, row=y)
 
@@ -372,6 +395,12 @@ Retourne:
 #  LES RÉGLAGES DU JEU ########################################################
 
 
+def label_chrono() -> (None):
+    """Le chronmètre pour mesurer la durée d'une partie."""
+
+    lb_chrono.grid(column=0, row=0, pady=5)
+
+
 def scale_largeur() -> (None):
     """L'échelle pour choisir la largeur."""
 
@@ -385,7 +414,7 @@ def scale_largeur() -> (None):
 
     sc_largeur.bind('<ButtonRelease>', event_max_mines)
 
-    sc_largeur.grid(column=0, row=0, pady=5)
+    sc_largeur.grid(column=0, row=1, pady=5)
 
 
 def scale_hauteur() -> (None):
@@ -401,7 +430,7 @@ def scale_hauteur() -> (None):
 
     sc_hauteur.bind('<ButtonRelease>', event_max_mines)
 
-    sc_hauteur.grid(column=0, row=1, pady=5)
+    sc_hauteur.grid(column=0, row=2, pady=5)
 
 
 def scale_mines() -> (None):
@@ -414,7 +443,11 @@ def scale_mines() -> (None):
     sc_mines['orient'] = 'horizontal'
     sc_mines['label'] = 'Mines:'
 
-    sc_mines.grid(column=0, row=2, pady=5)
+    # Place une valeur de base pour le nombre de mines
+    # La première partie est donc générée avec MINES_DEPART mines sur 5x5
+    sc_mines.set(MINES_DEPART)
+
+    sc_mines.grid(column=0, row=3, pady=5)
 
 
 def button_rejouer() -> (None):
@@ -424,7 +457,7 @@ def button_rejouer() -> (None):
     but_rejouer['text'] = 'Nouvelle partie'
     but_rejouer['command'] = actions.command_rejouer
 
-    but_rejouer.grid(column=0, row=3, pady=5)
+    but_rejouer.grid(column=0, row=4, pady=5)
 
 
 def frame_reglages(col=1, lig=0) -> (None):
@@ -432,8 +465,11 @@ def frame_reglages(col=1, lig=0) -> (None):
 personnaliser sa partie.
 
 Arguments:
- - col=0        - int - la colonne de la racine où sera placé le panneau,
+ - col=1        - int - la colonne de la racine où sera placé le panneau,
  - lig=0        - int - la ligne de la racine où sera placé le panneau."""
+
+    # Le chronomètre
+    label_chrono()
 
     # Les échelles pour les réglages
     scale_largeur()

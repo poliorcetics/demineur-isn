@@ -12,8 +12,7 @@ VARIABLES GLOBALES
 
 FONCTIONS
 
-    COMMANDES
-- rejouer(largeur, hauteur, nombre_mines)                           -> (None).
+- command_rejouer()     -> (None).
 """
 
 # Pour faire une sauvegarde sans références problématiques
@@ -21,14 +20,18 @@ from copy import deepcopy
 from constantes import *
 import terrain as jeu
 import interface as iu
+import actions_ordi as ordi
 
 # LES GLOBALES ################################################################
 
+# le terrain modifiable pour la partie et le terrain de base sauvegardé
 terrain = []
 terrain_complet = ()
 
+# les cases vues par le joueur
 cases_vues = []
 
+# la position des mines sur le terrain
 pos_mines = ()
 
 # LES COMMANDES ###############################################################
@@ -46,6 +49,9 @@ Commande pour le bouton 'but_rejouer'."""
     hauteur = iu.sc_hauteur.get()
     nb_mines = iu.sc_mines.get()
 
+    # On prépare les éléments pour pouvoir finir la partie
+    ordi.reset(hauteur, largeur, nb_mines)
+
     # On remet à zéro les positions vues
     cases_vues = []
 
@@ -57,6 +63,9 @@ Commande pour le bouton 'but_rejouer'."""
 
     # On génère le plateau
     iu.canvas_plateau(iu.fenetre, largeur, hauteur)
+
+    iu.lb_chrono.stop_chrono()
+    iu.lb_chrono.lance_chrono()
 
 
 # Exemples en console, toutes les valeurs ici sont des valeurs de test
