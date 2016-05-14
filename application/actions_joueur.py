@@ -12,7 +12,6 @@ VARIABLES GLOBALES
 
 FONCTIONS
 
-    COMMANDES
 - command_rejouer()     -> (None).
 """
 
@@ -25,11 +24,14 @@ import actions_ordi as ordi
 
 # LES GLOBALES ################################################################
 
+# le terrain modifiable pour la partie et le terrain de base sauvegardé
 terrain = []
 terrain_complet = ()
 
+# les cases vues par le joueur
 cases_vues = []
 
+# la position des mines sur le terrain
 pos_mines = ()
 
 # LES COMMANDES ###############################################################
@@ -48,8 +50,7 @@ Commande pour le bouton 'but_rejouer'."""
     nb_mines = iu.sc_mines.get()
 
     # On prépare les éléments pour pouvoir finir la partie
-    ordi.nb_cases = hauteur * largeur
-    ordi.nb_mines = nb_mines
+    ordi.reset(hauteur, largeur, nb_mines)
 
     # On remet à zéro les positions vues
     cases_vues = []

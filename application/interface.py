@@ -61,7 +61,9 @@ from chronometre import Chrono
 # La vérification permettant de savoir si l'on a fini la partie ou non
 import actions_ordi as ordi
 
+
 # LES VARIABLES GLOBALES ######################################################
+
 
 # La fenêtre principale
 fenetre = tk.Tk()
@@ -195,7 +197,7 @@ risque de prendre un peu de temps."""
     # On récupère la case sous sa forme de tk.Label
     case = cases_pos[(x, y)]
 
-    # Si la case est un chiffre basique, on l'afiche
+    # Si la case est un chiffre basique, on l'affiche
     if 0 < valeur_case < 9:
         actions.cases_vues.append((x, y))
         case['image'] = cases_img[valeur_case]
@@ -237,7 +239,12 @@ risque de prendre un peu de temps."""
     # Si la case n'était pas chiffrée (une mine donc), on la révèle simplement
     else:
         actions.cases_vues.append((x, y))
-        case['image'] = cases_img[valeur_case]
+        # Affiche la mine de couleur rouge si c'est celle qui fait perdre la
+        # partie, sinon la mine noire
+        if not ordi.fini:
+            case['image'] = cases_img[PERDU]
+        else:
+            case['image'] = cases_img[MINE]
 
     ordi.nb_cases_vues += 1
     ordi.verif_etat_partie(valeur_case)
