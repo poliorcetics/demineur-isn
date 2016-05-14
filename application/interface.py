@@ -9,7 +9,6 @@ VARIABLES GLOBALES
  - fenetre          - tk.Tk - la fenêtre principale,
  - fr_reglages      - tk.Frame - le panneau de réglages,
  - cv_plateau       - tk.Canvas - le plateau de jeu,
- - lb_chrono        - tk.Label + Chrono - le chronomètre des parties,
  - sc_largeur       - tk.Scale - l'échelle du choix de largeur,
  - sc_hauteur       - tk.Scale - l'échelle du choix de hauteur,
  - sc_mines         - tk.Scale - l'échelle du choix du nombre de mines,
@@ -39,7 +38,6 @@ FONCTIONS
                   col=0, lig=0)                                  -> (None),
 
     RÉGLAGES DU JEU
- - label_chrono()                                                -> (None),
  - scale_largeur()                                               -> (None),
  - scale_hauteur()                                               -> (None),
  - scale_mines()                                                 -> (None),
@@ -60,6 +58,8 @@ from constantes import *
 import actions_joueur as actions
 # Le chronomètre pour mesurer la durée d'une partie
 from chronometre import Chrono
+# La vérification permettant de savoir si l'on a fini la partie ou non
+import actions_ordi as ordi
 
 # LES VARIABLES GLOBALES ######################################################
 
@@ -199,7 +199,6 @@ risque de prendre un peu de temps."""
     if 0 < valeur_case < 9:
         actions.cases_vues.append((x, y))
         case['image'] = cases_img[valeur_case]
-        return
     # Si la case vaut zéro, on révèle l'entourage
     elif valeur_case == 0:
         actions.cases_vues.append((x, y))
@@ -239,6 +238,9 @@ risque de prendre un peu de temps."""
     else:
         actions.cases_vues.append((x, y))
         case['image'] = cases_img[valeur_case]
+
+    ordi.nb_cases_vues += 1
+    ordi.verif_etat_partie(valeur_case)
 
 # LES ÉVÈNEMENTS ##############################################################
 

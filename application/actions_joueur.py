@@ -21,6 +21,7 @@ from copy import deepcopy
 from constantes import *
 import terrain as jeu
 import interface as iu
+import actions_ordi as ordi
 
 # LES GLOBALES ################################################################
 
@@ -45,6 +46,10 @@ Commande pour le bouton 'but_rejouer'."""
     largeur = iu.sc_largeur.get()
     hauteur = iu.sc_hauteur.get()
     nb_mines = iu.sc_mines.get()
+
+    # On prépare les éléments pour pouvoir finir la partie
+    ordi.nb_cases = hauteur * largeur
+    ordi.nb_mines = nb_mines
 
     # On remet à zéro les positions vues
     cases_vues = []
