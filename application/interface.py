@@ -9,6 +9,7 @@ VARIABLES GLOBALES
  - fenetre          - tk.Tk - la fenêtre principale,
  - fr_reglages      - tk.Frame - le panneau de réglages,
  - cv_plateau       - tk.Canvas - le plateau de jeu,
+ - lb_chrono        - tk.Label + Chrono - le chronomètre des parties,
  - sc_largeur       - tk.Scale - l'échelle du choix de largeur,
  - sc_hauteur       - tk.Scale - l'échelle du choix de hauteur,
  - sc_mines         - tk.Scale - l'échelle du choix du nombre de mines,
@@ -38,6 +39,7 @@ FONCTIONS
                   col=0, lig=0)                                  -> (None),
 
     RÉGLAGES DU JEU
+ - label_chrono()                                                -> (None),
  - scale_largeur()                                               -> (None),
  - scale_hauteur()                                               -> (None),
  - scale_mines()                                                 -> (None),
