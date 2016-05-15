@@ -6,17 +6,18 @@ Permet de lancer l'interface et de la mettre à jour lors d'actions.
 
 VARIABLES GLOBALES
 
- - fenetre          - tk.Tk - la fenêtre principale,
- - fr_reglages      - tk.Frame - le panneau de réglages,
- - cv_plateau       - tk.Canvas - le plateau de jeu,
- - sc_largeur       - tk.Scale - l'échelle du choix de largeur,
- - sc_hauteur       - tk.Scale - l'échelle du choix de hauteur,
- - sc_mines         - tk.Scale - l'échelle du choix du nombre de mines,
- - but_rejouer      - tk.Button - le bouton pour rejouer,
- - cases            - dict(tk.Label: (int, int)) - les cases et leur position,
- - cases_pos        - dict((int, int): tk.Label) - les positions et leur case,
- - cases_taille     - int - la taille en pixel des côtés des cases,
- - cases_img        - dict(int: tk.PhotoImage) - les type de case et les \
+ - fenetre         - tk.Tk - la fenêtre principale,
+ - fr_reglages     - tk.Frame - le panneau de réglages,
+ - cv_plateau      - tk.Canvas - le plateau de jeu,
+ - lb_chrono       - Chrono(tk.Label) - le chronomètre,
+ - sc_largeur      - tk.Scale - l'échelle du choix de largeur,
+ - sc_hauteur      - tk.Scale - l'échelle du choix de hauteur,
+ - sc_mines        - tk.Scale - l'échelle du choix du nombre de mines,
+ - but_rejouer     - tk.Button - le bouton pour rejouer,
+ - cases           - dict(tk.Label: (int, int)) - les cases et leurs positions,
+ - cases_pos       - dict((int, int): tk.Label) - les positions et leurs cases,
+ - cases_taille    - int - la taille en pixel des côtés des cases,
+ - cases_img       - dict(int: tk.PhotoImage) - les type de case et les \
 images correspondantes.
 
 FONCTIONS
@@ -38,6 +39,7 @@ FONCTIONS
                   col=0, lig=0)                                  -> (None),
 
     RÉGLAGES DU JEU
+ - label_chrono()                                                -> (None),
  - scale_largeur()                                               -> (None),
  - scale_hauteur()                                               -> (None),
  - scale_mines()                                                 -> (None),
@@ -175,8 +177,11 @@ def maj_revele_case(x: int, y: int) -> (None):
 la case est une case sans mines dans son entourage direct (de valeur 0).
 
 Arguments:
- - x                - int - la position en x de la case,
- - y                - int - la position en y de la case.
+ - x               - int - la position en x de la case,
+ - y               - int - la position en y de la case.
+
+Modifie:
+ - case_pos        - dict((int, int): tk.Label) - les positions et leurs cases,
 
 Note:
  Ceci est une fonction récursive, sur un grand plateau avec peu de mines elle \

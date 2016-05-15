@@ -187,7 +187,6 @@ Argument:
 # Valeurs de tests uniquement
 if __name__ == '__main__':
 
-    affiche_terrain(genere_terrain(8, 8, 10)[0])
-    affiche_terrain(genere_terrain(10, 10, 10)[0])
-    affiche_terrain(genere_terrain(5, 5, 15)[0])
-    affiche_terrain(genere_terrain(30, 30, 150)[0])
+    affiche_terrain(genere_terrain(20, 10, 40)[0])
+    affiche_terrain(genere_terrain(8, 8, 20)[0])
+

@@ -31,6 +31,7 @@ Arguments:
  - racine           - tk.Tk() / tk.Canvas() / tk.Frame() - zone d'affichage
  - **kwargs         - divers arguments ajoutables à tk.Label.__init__
 """
+
         # Chrono est donc un objet tk.Label avec toutes les méthodes associées
         tk.Label.__init__(self, racine, kwargs)
         # Le temps écoulé depuis le lancement du chronomètre
@@ -58,6 +59,7 @@ actif."""
 
     def stop_chrono(self) -> (None):
         """Stoppe le chrono s'il est lancé, sinon ne fait rien."""
+
         self.chrono_actif = False
         # On utilise l'ID du self.after pour l'arr^ter au besoin
         if self._after is not None:
