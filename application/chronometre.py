@@ -4,15 +4,13 @@
 
 CLASSE
 
- - class Chrono(self, racine **kwargs)      <- (tk.Label)
-
+ - class Chrono(self, racine **kwargs)                          <- (tk.Label).
 
 FONCTION
 
- - formate_temps(temps: int)                -> (str)
+ - formate_temps(temps: int)                                    -> (str).
 """
 
-import time as t
 import tkinter as tk
 
 
