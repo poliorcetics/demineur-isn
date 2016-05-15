@@ -4,7 +4,7 @@
 
 CLASSE
 
- - class Chrono(self, racine **kwargs)                          <- (tk.Label).
+ - class Chrono(self, racine)                                   <- (tk.Label).
 
 FONCTION
 
@@ -18,13 +18,13 @@ class Chrono(tk.Label):
     """Dérive de tk.Label pour former un chronomètre qui une fois lancé,
  continue de tourner en se mettant à jour toutes les secondes.
 
- - __init__(self, racine, **kwargs)         -> (None),
+ - __init__(self, racine)                   -> (None),
  - tourne_chrono(self)                      -> (None),
  - lance_chrono(self)                       -> (None),
  - stop_chrono(self)                        -> (None)
 """
 
-    def __init__(self, racine, **kwargs) -> (None):
+    def __init__(self, racine) -> (None):
         """Initialise le chronomètre.
 
 Arguments:
@@ -33,7 +33,7 @@ Arguments:
 """
 
         # Chrono est donc un objet tk.Label avec toutes les méthodes associées
-        tk.Label.__init__(self, racine, kwargs)
+        tk.Label.__init__(self, racine)
         # Le temps écoulé depuis le lancement du chronomètre
         self.temps_ecoule = 0
         # Détermine l'état du chronomètre
