@@ -357,8 +357,8 @@ Retourne:
 def canvas_plateau(racine: tk.Tk,
                    largeur: int, hauteur: int,
                    col=0, lig=0) -> (None):
-    """Dessine le plateau de base du jeu, avant que l'utilisateur commence à \
-jouer.
+    """Dessine le plateau de base du jeu, avant que l'utilisateur ne commence \
+à jouer.
 
 Argument:
  - racine       - tk.Tk - la fenêtre dans laquelle dessiner le plateau,
