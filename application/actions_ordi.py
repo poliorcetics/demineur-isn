@@ -62,6 +62,7 @@ Retourne:
         if valeur_case == 9:
             fin_partie("Vous avez perdu ! :'(")
             fini = True
+            iu.lb_chrono.stop_chrono()
             revele_plateau()
             return False
 
@@ -70,6 +71,7 @@ Retourne:
         if nb_mines + nb_cases_vues == nb_cases:
             fin_partie("Vous avez gagné ! :D")
             fini = True
+            iu.lb_chrono.stop_chrono()
             revele_plateau()
             return True
 

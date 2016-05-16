@@ -6,17 +6,18 @@ Permet de lancer l'interface et de la mettre à jour lors d'actions.
 
 VARIABLES GLOBALES
 
- - fenetre          - tk.Tk - la fenêtre principale,
- - fr_reglages      - tk.Frame - le panneau de réglages,
- - cv_plateau       - tk.Canvas - le plateau de jeu,
- - sc_largeur       - tk.Scale - l'échelle du choix de largeur,
- - sc_hauteur       - tk.Scale - l'échelle du choix de hauteur,
- - sc_mines         - tk.Scale - l'échelle du choix du nombre de mines,
- - but_rejouer      - tk.Button - le bouton pour rejouer,
- - cases            - dict(tk.Label: (int, int)) - les cases et leur position,
- - cases_pos        - dict((int, int): tk.Label) - les positions et leur case,
- - cases_taille     - int - la taille en pixel des côtés des cases,
- - cases_img        - dict(int: tk.PhotoImage) - les type de case et les \
+ - fenetre         - tk.Tk - la fenêtre principale,
+ - fr_reglages     - tk.Frame - le panneau de réglages,
+ - cv_plateau      - tk.Canvas - le plateau de jeu,
+ - lb_chrono       - Chrono(tk.Label) - le chronomètre,
+ - sc_largeur      - tk.Scale - l'échelle du choix de largeur,
+ - sc_hauteur      - tk.Scale - l'échelle du choix de hauteur,
+ - sc_mines        - tk.Scale - l'échelle du choix du nombre de mines,
+ - but_rejouer     - tk.Button - le bouton pour rejouer,
+ - cases           - dict(tk.Label: (int, int)) - les cases et leurs positions,
+ - cases_pos       - dict((int, int): tk.Label) - les positions et leurs cases,
+ - cases_taille    - int - la taille en pixel des côtés des cases,
+ - cases_img       - dict(int: tk.PhotoImage) - les type de case et les \
 images correspondantes.
 
 FONCTIONS
@@ -38,6 +39,7 @@ FONCTIONS
                   col=0, lig=0)                                  -> (None),
 
     RÉGLAGES DU JEU
+ - label_chrono()                                                -> (None),
  - scale_largeur()                                               -> (None),
  - scale_hauteur()                                               -> (None),
  - scale_mines()                                                 -> (None),
@@ -55,7 +57,7 @@ import tkinter as tk
 # Les constantes représentants les éléments du jeu
 from constantes import *
 # Les actions de l'utilisateur
-import actions_joueur as actions
+import actions_joueur as joueur
 # Le chronomètre pour mesurer la durée d'une partie
 from chronometre import Chrono
 # La vérification permettant de savoir si l'on a fini la partie ou non
@@ -175,8 +177,11 @@ def maj_revele_case(x: int, y: int) -> (None):
 la case est une case sans mines dans son entourage direct (de valeur 0).
 
 Arguments:
- - x                - int - la position en x de la case,
- - y                - int - la position en y de la case.
+ - x               - int - la position en x de la case,
+ - y               - int - la position en y de la case.
+
+Modifie:
+ - case_pos        - dict((int, int): tk.Label) - les positions et leurs cases,
 
 Note:
  Ceci est une fonction récursive, sur un grand plateau avec peu de mines elle \
@@ -187,11 +192,11 @@ risque de prendre un peu de temps."""
     # On récupère la valeur de la case et on continue dans la fonction
     # uniquement si la case n'a pas déjà été révélé
     try:
-        valeur_case = actions.terrain[y][x]
+        valeur_case = joueur.terrain[y][x]
     except IndexError:
         return
     finally:
-        if (x, y) in actions.cases_vues:
+        if (x, y) in joueur.cases_vues:
             return
 
     # On récupère la case sous sa forme de tk.Label
@@ -199,17 +204,17 @@ risque de prendre un peu de temps."""
 
     # Si la case est un chiffre basique, on l'affiche
     if 0 < valeur_case < 9:
-        actions.cases_vues.append((x, y))
+        joueur.cases_vues.append((x, y))
         case['image'] = cases_img[valeur_case]
     # Si la case vaut zéro, on révèle l'entourage
     elif valeur_case == 0:
-        actions.cases_vues.append((x, y))
+        joueur.cases_vues.append((x, y))
         case['image'] = cases_img[valeur_case]
 
         # Pour éviter les indices négatifs et les problèmes qui vont avec, on
         # provoque une IndexError dans les appels suivants
-        y_moins = y - 1 if y - 1 >= 0 else len(actions.terrain)
-        x_moins = x - 1 if x - 1 >= 0 else len(actions.terrain[0])
+        y_moins = y - 1 if y - 1 >= 0 else len(joueur.terrain)
+        x_moins = x - 1 if x - 1 >= 0 else len(joueur.terrain[0])
 
         # On teste les cases autour, pour les révéler ou propager la révélation
         # si elles sont de valeur 0
@@ -238,7 +243,7 @@ risque de prendre un peu de temps."""
         maj_revele_case(x_moins, y)
     # Si la case n'était pas chiffrée (une mine donc), on la révèle simplement
     else:
-        actions.cases_vues.append((x, y))
+        joueur.cases_vues.append((x, y))
         # Affiche la mine de couleur rouge si c'est celle qui fait perdre la
         # partie, sinon la mine noire
         if not ordi.fini:
@@ -275,7 +280,7 @@ seront révélées elles-aussi."""
     x, y = cases[c.widget]
 
     # S'il y a un drapeau, on ne fait rien
-    if actions.terrain[y][x] == DRAPEAU:
+    if joueur.terrain[y][x] == DRAPEAU:
         return
     # Si ce n'est pas un drapeau, alors on ajoute la case à la liste des
     # cases du terrain vues et on affiche la case
@@ -294,23 +299,23 @@ un."""
     # correspondante
     case = c.widget
     x, y = cases[case]
-    valeur_case = actions.terrain[y][x]
+    valeur_case = joueur.terrain[y][x]
 
     # S'il y a déjà un drapeau, on le supprime et on remplace par
     # l'ancienne valeur
     if valeur_case == DRAPEAU:
         # On remet l'image de base
         case['image'] = cases_img[BASE]
-        actions.terrain[y][x] = actions.terrain_complet[y][x]
+        joueur.terrain[y][x] = joueur.terrain_complet[y][x]
         # On 'return' pour éviter de faire le test suivant si la case était
         # un drapeau
         return
 
     # S'il n'y a pas de drapeau (vérifié au dessus) et que la case est encore
     # cachée, on peut placer un drapeau
-    if not ((x, y) in actions.cases_vues):
+    if not ((x, y) in joueur.cases_vues):
         case['image'] = cases_img[DRAPEAU]
-        actions.terrain[y][x] = DRAPEAU
+        joueur.terrain[y][x] = DRAPEAU
 
 
 # LE PLATEAU DU JEU ###########################################################
@@ -362,13 +367,16 @@ Argument:
  - col=0        - int - la colonne de la racine où sera placé le plateau,
  - lig=0        - int - la ligne de la racine où sera placé le plateau.
 
-Retourne:
- - plateau      - tk.Canvas - le plateau du jeu."""
+Modifie:
+ - cv_plateau   - tk.Canvas - le plateau du jeu."""
 
     global cv_plateau, cases_taille, cases, cases_pos
 
-    # On nettoie le plateau précédent
+    # On nettoie le plateau précédent, on remet à zéro les variables en ayant
+    # besoin
     cv_plateau.destroy()
+    cases = {}
+    cases_pos = {}
 
     # On met à jour les images
     maj_taille_cases(largeur, hauteur)
@@ -455,7 +463,7 @@ def button_rejouer() -> (None):
 
     # Le bouton pour rejouer
     but_rejouer['text'] = 'Nouvelle partie'
-    but_rejouer['command'] = actions.command_rejouer
+    but_rejouer['command'] = joueur.command_rejouer
 
     but_rejouer.grid(column=0, row=4, pady=5)
 
@@ -498,7 +506,7 @@ def interface(titre: str, largeur_min: int, hauteur_min: int) -> (None):
     frame_reglages()
 
     # Initialise le plateau de jeu et un terrain vide en même temps
-    actions.command_rejouer()
+    joueur.command_rejouer()
 
     # Lance l'interface
     fenetre.mainloop()

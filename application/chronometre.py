@@ -4,15 +4,13 @@
 
 CLASSE
 
- - class Chrono(self, racine **kwargs)      <- (tk.Label)
-
+ - class Chrono(self, racine)                                   <- (tk.Label).
 
 FONCTION
 
- - formate_temps(temps: int)                -> (str)
+ - formate_temps(temps: int)                                    -> (str).
 """
 
-import time as t
 import tkinter as tk
 
 
@@ -20,21 +18,22 @@ class Chrono(tk.Label):
     """Dérive de tk.Label pour former un chronomètre qui une fois lancé,
  continue de tourner en se mettant à jour toutes les secondes.
 
- - __init__(self, racine, **kwargs)         -> (None),
+ - __init__(self, racine)                   -> (None),
  - tourne_chrono(self)                      -> (None),
  - lance_chrono(self)                       -> (None),
  - stop_chrono(self)                        -> (None)
 """
 
-    def __init__(self, racine, **kwargs) -> (None):
+    def __init__(self, racine) -> (None):
         """Initialise le chronomètre.
 
 Arguments:
  - racine           - tk.Tk() / tk.Canvas() / tk.Frame() - zone d'affichage
  - **kwargs         - divers arguments ajoutables à tk.Label.__init__
 """
+
         # Chrono est donc un objet tk.Label avec toutes les méthodes associées
-        tk.Label.__init__(self, racine, kwargs)
+        tk.Label.__init__(self, racine)
         # Le temps écoulé depuis le lancement du chronomètre
         self.temps_ecoule = 0
         # Détermine l'état du chronomètre
@@ -60,6 +59,7 @@ actif."""
 
     def stop_chrono(self) -> (None):
         """Stoppe le chrono s'il est lancé, sinon ne fait rien."""
+
         self.chrono_actif = False
         # On utilise l'ID du self.after pour l'arr^ter au besoin
         if self._after is not None:
