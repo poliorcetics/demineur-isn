@@ -97,16 +97,3 @@ Modifie:
     nb_mines = mines
     nb_cases_vues = 0
     fini = False
-
-
-if __name__ == "__main__":
-
-    t = tk.Tk()
-
-    def fin():
-        fin_partie('yeh')
-
-    btn = tk.Button(t, text='test', command=fin)
-    btn.pack()
-
-    t.mainloop()
