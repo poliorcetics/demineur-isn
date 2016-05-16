@@ -367,13 +367,16 @@ Argument:
  - col=0        - int - la colonne de la racine où sera placé le plateau,
  - lig=0        - int - la ligne de la racine où sera placé le plateau.
 
-Retourne:
- - plateau      - tk.Canvas - le plateau du jeu."""
+Modifie:
+ - cv_plateau   - tk.Canvas - le plateau du jeu."""
 
     global cv_plateau, cases_taille, cases, cases_pos
 
-    # On nettoie le plateau précédent
+    # On nettoie le plateau précédent, on remet à zéro les variables en ayant
+    # besoin
     cv_plateau.destroy()
+    cases = {}
+    cases_pos = {}
 
     # On met à jour les images
     maj_taille_cases(largeur, hauteur)
