@@ -61,6 +61,12 @@ Les codes lus étaient soit en anglais soit en français. J'ai trouvé des
 exemples basés sur la programmation orienté objet, d'autres sur un paradigme
 fonctionnel et enfin certains utilisaient des boucles évènementielles.
 
+\paragraph{Principe:}
+Notre démineur est classique: il faut révéler toutes les cases non-minées du
+terrain. Pour cela, les cases sont numérotées en fonction du nombre de mines
+dans leur entourage direct. Le joueur peut placer/supprimer des drapeaux à sa
+guise.
+
 % ----------------------------------------------------------------- FIN SECTION
 
 \newpage
@@ -106,42 +112,238 @@ La seconde raison est la communauté Python, qu'elle soit française ou anglaise
 qui est très développée et active et donc plus à même de nous aider en cas
 de problème important. La dernière raison était plus spécifique à notre groupe,
 puisqu'elle vient du fait que j'ai déjà beaucoup codé en Python, que ce soit
-pour des programmes graphiques ou en ligne de commande.
+pour des programmes graphiques ou en ligne de commande. \\
+Nous avons utilisé uniquement la bibliothèque \emph{Tkinter} pour notre projet,
+afin de le rendre jouable sur un maximum de systèmes d'exploitations d'un coup.
 
 \paragraph{Choix du `type' de code:}
 Nous avons choisi d'écrire du code sous forme de fonctions et en partant sur
-une gestion évènementielle du démineur
+une gestion évènementielle du démineur. Cela nous a évité de manipuler les
+classes, trop compliquées pour nous. Nous avons toutefois fait une exception
+pour le chronomètre car la solution utilisant une classe était à la fois la
+plus simple et la plus élégante.
 
 % -------------------------------------------------------------- fin SUBsection
-
 % ----------------------------------------------------------------- FIN SECTION
+
+\newpage
 
 % SECTION ---------------------------------------------------------------------
 \section{Organisation du travail en groupe}
 
+% SUBsection ------------------------------------------------------------------
+\subsection{Répartition des tâches}
 
+\paragraph{}
+Nous avons réparti les différentes tâches au sein du groupe de la manière
+suivante, en tenant compte de nos niveaux respectifs et de nos envies. \\
+Par exemple, j'avais envie de m'occuper de la génération du terrain car cela
+me semblait un défi intéressant, je l'ai donc choisi quand personne n'a
+protesté contre.
 
+\begin{itemize}
+\item Alexis: \emph{Génération du terrain + interface},
+\item Dorian: \emph{Gestion du temps},
+\item Kévin: \emph{Gestion des actions pour rejouer et pour perdre}.
+\end{itemize}
+
+% -------------------------------------------------------------- fin SUBsection
+
+% SUBsection ------------------------------------------------------------------
+\subsection{Moyens de collaboration}
+
+\paragraph{1. Skype:}
+Nous avons utilisé Skype pour nous parler régulièrement et échanger nos progrès
+sur le code du démineur. Nous avons organisé plusieurs soirées/après-midi où
+nous étions deux ou trois à discuter sur comment coder une idée particulière
+afin qu'elle s'intègre dans le projet et s'assurer qu'elle fonctionne ailleurs
+que sur l'ordinateur du codeur originel.
+
+\paragraph{2. Github:}
+Nous avons aussi utilisé Github car j'en avais déjà l'usage pour d'autres
+projets et que son utilisation basique est assez simple. Nous avons utilisé
+deux branches: une branche \emph{dev} pour nous échanger les fichiers sans
+qu'ils soient forcément compatibles et la branche de base \emph{master} pour
+le programme fonctionnel. Cela nous assurait de plus une sauvegarde sure des
+fichiers de code et des éléments graphiques.
+
+\paragraph{Documentation:}
+J'ai beaucoup insisté pour que la documentation et les commentaires soient
+aussi complets et détaillés que possibles. Cela nous a permis de partir du
+travail d'un autre sans avoir à recomprendre sa manière de réfléchir en lisant
+du code et nous rendait capable de travailler de notre côté sans avoir besoin
+d'aide à chaque utilisation d'un code écrit par un autre membre du projet. \\
+Ainsi les signatures des fonctions devaient être aussi complètes que possible,
+avec la valeur de retour signalée (grâce aux avancées de Python 3.5).
+
+% -------------------------------------------------------------- fin SUBsection
 % ----------------------------------------------------------------- FIN SECTION
+
+\newpage
 
 % SECTION ---------------------------------------------------------------------
 \section{Réalisation}
 
+\paragraph{}
+Dans cette partie, je vais présenter ce que j'ai fait et les difficultés
+rencontrées durant la réalisation des tâches qui m'étaient attribuées.
 
+% SUBsection ------------------------------------------------------------------
+\subsection{Génération du terrain}
 
+\paragraph{Objectif:}
+Je devais créer un ensemble de fonctions capables de faire les actions
+suivantes:
+
+\begin{itemize}
+\item Générer un terrain de largeur et la hauteur demandées,
+\item Placer les mines sur ce terrain,
+\item Placer les chiffres dans les cases entourant les mines.
+\end{itemize}
+
+\paragraph{Réalisation:}
+J'ai donc créé quatre fonctions pour faire cela. \\
+• La première fonction, $\emph{entourage\_case}$, permet de compter les mines
+autour d'une case. \\
+• $\emph{place\_mines}$ place le nombre de mines demandées sur un terrain vide,
+de façon aléatoire. \\
+• $\emph{place\_nb\_mines}$ place le nombre de mines adjacentes dans chaque
+case. Cette fonction utilise la première, présentée plus haut. \\
+• $\emph{genere\_terrain}$ fait usage des deux fonctions précédentes pour
+créer un terrain à partir des choix de l'utilisateur quant à la largeur, la
+hauteur et le nombre de mines. \\
+J'ai aussi créé une fonction $\emph{affiche\_terrain}$ pour pouvoir tester le
+bon fonctionnement des fonctions précédentes au cours du développement.
+
+\paragraph{Résultats:}
+Voici les résultats que j'obtiens lorsque j'utilise $\emph{affiche\_terrain}$
+pour générer divers terrains.
+
+\begin{center}
+$\underbrace{\includegraphics[scale=0.90]{terrains_exemples.png}}_{\text{Un
+terrain de 20x10 avec 40 mines.}}$
+\end{center}
+
+\paragraph{Problèmes rencontrés:}
+J'ai eu à corriger des problèmes d'indexation lorsque de je codais la fonction
+qui compte les mines dans l'entourage d'une case. En effet, avec les cases en
+bordure il a fallu prendre en compte le fait que pour Python, faire un $-1$
+comme index revient à partir de la fin de liste, ce qui ajoutait parfois une
+mine qui n'aurait pas due être comptée pour cette case. \\
+Un autre problème a été le placement aléatoires des mines. Avec la première
+version de ma fonction, les mines étaient toutes alignées sur une colonne à
+cause d'une erreur de réfèrencement. Après m'être renseigné sur le problème,
+il a été assez facile à corriger, il venait de la façon dont la double liste
+représentant le terrain était générée.
+
+% -------------------------------------------------------------- fin SUBsection
+
+% SUBsection ------------------------------------------------------------------
+\subsection{Interface du démineur}
+
+\paragraph{Objectif:}
+L'interface du démineur devait permettre les actions et montrer les
+informations suivantes:
+
+\begin{itemize}
+\item Placer le terrain jouable (pouvoir placer et retirer des drapeaux,
+révéler les cases sans drapeaux, placer le sprite correspondant à la case),
+\item Créer les éléments graphiques pour le jeu (puisque nous n'avons rien
+trouvé à nos goûts),
+\item Permettre de rejouer une partie,
+\item Permettre de sélectionner la largeur, la hauteur et le nombre de mines,
+\item Afficher la durée de la partie.
+\end{itemize}
+
+\paragraph{Réalisation:}
+J'ai utilisé \emph{tkinter} pour réaliser l'interface. Cela permet une
+portabilité plus importante qu'avec d'autres bibliothèques, facilite
+l'utilisation du programmme et simplifie son partage. \\
+Pour le terrain de jeu, j'ai utilisé un objet \emph{Canvas}. Pour les réglages
+du jeu, j'ai utilisé des \emph{Scale}, \emph{Label} et \emph{Button} à
+l'intérieur d'une \emph{Frame}.
+
+\paragraph{Création du plateau de jeu:}
+Le plateau de jeu est créé par la fonction \emph{canvas\_plateau(racine: tk.Tk,
+largeur: int, hauteur: int, col=0, lig=0)}. Elle commence par nettoyer tout
+ce qui a pu être référencé dans les variables importantes. Ainsi l'ancien
+plateau est détruit (s'il existe, sinon rien ne se passe) et les variables
+référençant les cases sont remises à zéro. Les images du jeu sont alors mises
+à jour à leur tour pour être adaptée à la taille du nouveau plateau, puis le
+nouveau plateau est initialisé. Enfin les cases sont dessinées une par une
+pour remplir le plateau et dans le même temps elles sont référencées de deux
+manières: par leur position et par leur \emph{ID} de \emph{Label} que
+\emph{Tkinter} leur fournit à leur création.
+
+\paragraph{Résultats:}
+À chaque lancement de l'application, un plateau de 5x5 avec 5 mines est généré,
+permettant de jouer une partie rapide directment. \\
+
+\centerline{\includegraphics[scale=0.5]{interface_exemple.png}}
+
+\paragraph{Problèmes rencontrés:}
+Le premier gros problème que j'ai rencontré a été un problème avec le
+\emph{Garbage Collector} de Python, qui supprimait les images quand je tentais
+de les référencer. J'ai mis du temps à le comprendre car le code que j'avais
+à l'origine s'éxecutait sans problème jusqu'au moment où je cliquais sur une
+case, moment où la demande d'accès à une image non référencée faisait planter
+le programme. \\
+Le problème a été réglé assez rapidement une fois que j'ai cherché sur le Web
+mais le temps que j'ai passé à lire la documentation et le code de Tkinter
+n'a absolument pas aidé. \\
+La propagation de la révélation des cases a été le second problème important de
+l'interface, en présentant deux problèmes en un. Tout d'abord, je n'avais à ce
+moment aucun moyen d'accéder aux références des cases via leur position, j'ai
+donc dû me résoudre à créer une variable supplémentaire, \emph{cases\_pos}, qui
+est un dictionnaire de la forme \emph{\{(int, int): tk.Label\}} et qui
+référence les \emph{ID} des cases en fonction de leurs positions en
+\emph{(x, y)}. Le second problème était un problème de récursion. En effet,
+la fonction \emph{maj\_revele\_case(x: int, y: int)}, dans sa première version,
+impliquait un grand nombre de boucles inutiles et posait son return trop tard,
+amenant une erreur de récursion trop importante car elle ne vérifiait pas assez
+tôt si la case avait été vue auparavant, causant une boucle infinie en
+repassant sans arrêt sur les mêmes cases.
+
+% -------------------------------------------------------------- fin SUBsection
 % ----------------------------------------------------------------- FIN SECTION
 
-% SECTION ---------------------------------------------------------------------
-\section{Intégration de ma partie}
-
-
-
-% ----------------------------------------------------------------- FIN SECTION
+\newpage
 
 % SECTION ---------------------------------------------------------------------
 \section{Bilan du projet}
 
+% SUBsection ------------------------------------------------------------------
+\subsection{Ce qu'il m'a apporté}
 
+\paragraph{}
+Premièrement, je pense que ce que j'ai le plus appris avec ce projet, c'est à
+travailler en groupe sur du code. J'utilise souvent Github, mais presque
+uniquement pour des projets personnels, afin de me donner un moyen de suivi de
+l'évolution et de faciliter le partage si je veux le passer à quelqu'un. \\
+J'ai aussi pas mal appris sur la bibliothèque standard de Python (je pense
+notamment à la fonction \emph{after} utilisée par Dorian pour le chronomètre)
+et sur le module \emph{tkinter}. \\
+Je me suis beaucoup amusé avec la récursion, c'était très intéressant de
+travailler avec plutôt qu'avec des boucles \emph{while} ou \emph{for}. \\
+Enfin, la gestion de modules s'appelant entre eux, les espaces de noms leur
+étant attribués et tout le travail pour faire une documentation aussi claire
+et complète que possible ont été très formateurs dans leurs domaines.
 
+% -------------------------------------------------------------- fin SUBsection
+
+% SUBsection ------------------------------------------------------------------
+\subsection{Ce que nous pourrions améliorer}
+
+\paragraph{Les scores}
+Nous avons pensé durant le projet à ajouter des scores avec sauvergarde de ces
+derniers pour permettre aux joueurs de se comparer à eux mêmes ou entre eux
+mais nous n'avons pas pris le temps de plus réfléchir à l'idée et ne sommes pas
+allés plus loin. \\
+Nous avions aussi envisagé d'ajouter du son lors des clics sur le plateau, mais
+là non plus nous ne sommes pas allés plus loin, principalement par manque de
+fichiers de son que nous n'avions pas les moyens d'enregister correctement. \\
+
+% -------------------------------------------------------------- fin SUBsection
 % ----------------------------------------------------------------- FIN SECTION
 
 % ----------------------------------------------------------------- FIN CONTENU
